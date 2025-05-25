@@ -1,0 +1,68 @@
+.pokemon-detail-container {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  .pokemon-name {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+  }
+  
+  .pokemon-image {
+    width: 150px;
+    height: auto;
+    margin: 1rem 0;
+  }
+  
+  .stats-section {
+    text-align: left;
+    margin-top: 1.5rem;
+  }
+  
+  .stats-section h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: #34495e;
+  }
+  
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4rem 1rem;
+    border-bottom: 1px solid #eee;
+    font-size: 0.95rem;
+  }
+  
+  .stat-name {
+    font-weight: 600;
+    color: #2d3436;
+  }
+  
+  .stat-value {
+    color: #0984e3;
+  }
+  
+  .back-button {
+    margin-top: 1rem;
+    background-color: #27ae60;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .back-button:hover {
+    background-color: #219150;
+  }
+  
