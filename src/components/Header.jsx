@@ -39,7 +39,6 @@ function Header() {
   const handleLogout = () => {
     if (window.confirm('¿Estás seguro de querer cerrar sesión?')) {
       try {
-      clearCart(); 
         logout();    
         navigate('/login');
       } catch (error) {
