@@ -337,7 +337,7 @@ export const CartProvider = ({ children }) => {
         const price = parseFloat(item.price);
         const quantity = parseInt(item.quantity, 10);
         if (isNaN(price) || isNaN(quantity) || !item) return acc;
-        return acc + price * quantity;
+        return acc + quantity;
       },0).toFixed(2);
   };
 
