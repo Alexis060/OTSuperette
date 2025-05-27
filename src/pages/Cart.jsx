@@ -67,7 +67,7 @@ function Cart() {
 
                 <div className="item-details">
                   <h3 className="item-name">{product.name || 'Producto no disponible'}</h3>
-                  <p className="item-price">Precio unitario: ${formatPrice}</p>
+                  <p className="item-price">Precio unitario: ${formatPrice(product.price)}</p>
 
                   <div className="quantity-controls">
                     <button
