@@ -39,7 +39,7 @@ function FeaturedProducts() {
     fetchProducts();
   }, []);
 
-  const handleAddToCart = (product) => {
+  const handleAddToCart = (produc) => {
     if (cartLoading) {
       console.log('Operación de carrito en progreso...');
       return;
