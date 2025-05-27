@@ -11,17 +11,18 @@ function Header() {
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
-  const { cart, cartCount, clearCart, loading: cartLoading } = useCart();
-  const { isAuth, logout } = useAuth();
+  // Asegúrate de que clearCart esté siendo obtenido de useCart
+  const { cart, cartCount, clearCart, loading: cartLoading } = useCart(); 
+  const { isAuth, logout } = useAuth(); // 'logout' aquí es la función de AuthContext
 
-  // LOG AÑADIDO PARA DIAGNÓSTICO
-  console.log(
-    `[Header RENDER] Timestamp: ${new Date().toISOString()}`,
-    'isAuth (from AuthContext):', isAuth,
-    'Cart count (from CartContext):', cartCount,
-    'Cart loading (from CartContext):', cartLoading,
-    'Cart object (from CartContext):', JSON.stringify(cart, null, 2) // Logueamos el objeto cart también
-  );
+  // LOG AÑADIDO PARA DIAGNÓSTICO (lo mantengo por si te es útil en esta rama)
+  // console.log(
+  //   `[Header RENDER] Timestamp: ${new Date().toISOString()}`,
+  //   'isAuth (from AuthContext):', isAuth,
+  //   'Cart count (from CartContext):', cartCount,
+  //   'Cart loading (from CartContext):', cartLoading,
+  //   // 'Cart object (from CartContext):', JSON.stringify(cart, null, 2) // Puede ser muy verboso
+  // );
 
 
   const handleSearch = (e) => {
@@ -38,8 +39,8 @@ function Header() {
   const handleLogout = () => {
     if (window.confirm('¿Estás seguro de querer cerrar sesión?')) {
       try {
-        // Logout (elimina token, etc)
-        logout();
+      clearCart(); 
+        logout();    
         navigate('/login');
       } catch (error) {
         console.error('Error en logout:', error);
@@ -91,7 +92,6 @@ function Header() {
           )}
         </Link>
 
-        {/* Usar isAuth del contexto aquí */}
         {isAuth && (
           <button className="logout-button" onClick={handleLogout}>
             <box-icon name="log-out" color="#ffffff" size="md"></box-icon>
@@ -103,6 +103,9 @@ function Header() {
         className={`hamburger ${menuOpen ? 'open' : ''}`}
         onClick={() => setMenuOpen(!menuOpen)}
         aria-label="Menú"
+        role="button" 
+        tabIndex={0} 
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setMenuOpen(!menuOpen); }}
       >
         <span className="bar"></span>
         <span className="bar"></span>
@@ -113,7 +116,6 @@ function Header() {
         <ul className="nav-list">
           <li><Link to="/" onClick={() => setMenuOpen(false)}>Inicio</Link></li>
           <li><Link to="/contacto" onClick={() => setMenuOpen(false)}>Ayuda</Link></li>
-          {/* Usar isAuth del contexto aquí */}
           {isAuth ? (
             <li><button className="mobile-logout" onClick={() => { handleLogout(); setMenuOpen(false); }}>Cerrar Sesión</button></li>
           ) : (
