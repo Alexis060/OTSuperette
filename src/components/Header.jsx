@@ -120,7 +120,7 @@ function Header() {
           ) : (
             <li><Link to="/login" onClick={() => setMenuOpen(false)}>Iniciar Sesión</Link></li>
           )}
-          <li><Link to="/categorias" onClick={() => setMenuOpen(false)}>Categorías</Link></li>
+          <li><Link to="/categories" onClick={() => setMenuOpen(false)}>Categorías</Link></li>
           <li><Link to="/ofertas" onClick={() => setMenuOpen(false)}>Ofertas</Link></li>
           <li><Link to="/pokemon/1" onClick={() => setMenuOpen(false)}>Pokémon</Link></li>
         </ul>
