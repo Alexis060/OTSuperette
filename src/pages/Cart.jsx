@@ -35,7 +35,7 @@ function Cart() {
 
   return (
     <div className="cart-container">
-      <button className="back-button" >
+      <button className="back-button" onClick={() => navigate('/categorias')}>
         ⬅ Seguir comprando
       </button>
       <h2>Carrito de Compras</h2>
