@@ -89,7 +89,7 @@ function Cart() {
                 <div className="cart-item-actions">
                   <p>Subtotal: ${formatPrice(product.price * product.quantity)}</p>
                   <button
-                    onClick={() => removeFromCart(product._id)}
+                    onClick={() => removeFromCart}
                     className="remove-item-button"
                     disabled={loading}
                   >
