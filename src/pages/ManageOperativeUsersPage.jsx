@@ -1,6 +1,6 @@
 // src/pages/ManageOperativeUsersPage.jsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../context/AuthContext'; // Ajusta la ruta si es diferente
+import { useAuth } from '../context/AuthContext';
 
 const ManageOperativeUsersPage = () => {
     const [operativeUsers, setOperativeUsers] = useState([]);
@@ -37,7 +37,7 @@ const ManageOperativeUsersPage = () => {
     }, [token]);
 
     useEffect(() => {
-        if (token) { // Solo hacer fetch si hay token (admin está logueado)
+        if (token) {
             fetchOperativeUsers();
         }
     }, [fetchOperativeUsers, token]);
@@ -57,7 +57,6 @@ const ManageOperativeUsersPage = () => {
                 const data = await response.json();
                 if (response.ok && data.success) {
                     setFeedbackMessage(data.message || 'Usuario operativo eliminado exitosamente.');
-                    // Actualizar la lista de usuarios en el frontend, filtrando el eliminado
                     setOperativeUsers(prevUsers => prevUsers.filter(user => user._id !== userIdToDelete));
                 } else {
                     setError(data.message || 'Error al eliminar el usuario operativo.');
@@ -70,39 +69,36 @@ const ManageOperativeUsersPage = () => {
     };
 
     if (loading) {
-        return <div style={{ padding: '20px' }}>Cargando usuarios operativos...</div>;
+        return <div className="management-container">Cargando usuarios operativos...</div>;
     }
 
     return (
-        <div className="page-container" style={{ padding: '20px', maxWidth: '800px', margin: '20px auto' }}>
+        <div className="management-container">
             <h1>Gestionar Usuarios Operativos</h1>
-            {error && <p style={{ color: 'red' }}>Error: {error}</p>}
-            {feedbackMessage && <p style={{ color: 'green' }}>{feedbackMessage}</p>}
+            {error && <p style={{ color: 'red', textAlign: 'center' }}>Error: {error}</p>}
+            {feedbackMessage && <p style={{ color: 'green', textAlign: 'center' }}>{feedbackMessage}</p>}
             
-            {operativeUsers.length === 0 && !loading && !error && (
-                <p>No hay usuarios operativos para mostrar.</p>
-            )}
-
-            {operativeUsers.length > 0 && (
-                <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
+            {operativeUsers.length > 0 ? (
+                <table className="management-table">
                     <thead>
-                        <tr style={{ borderBottom: '2px solid #ddd', backgroundColor: '#f2f2f2' }}>
-                            <th style={{ padding: '12px', textAlign: 'left' }}>Nombre</th>
-                            <th style={{ padding: '12px', textAlign: 'left' }}>Email</th>
-                            <th style={{ padding: '12px', textAlign: 'left' }}>ID</th>
-                            <th style={{ padding: '12px', textAlign: 'center' }}>Acciones</th>
+                        {/* --- CORRECCIÓN APLICADA AQUÍ --- */}
+                        <tr>
+                            <th className="col-nombre">Nombre</th>
+                            <th className="col-email">Email</th>
+                            <th className="col-id">ID</th>
+                            <th className="col-acciones">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {operativeUsers.map(user => (
-                            <tr key={user._id} style={{ borderBottom: '1px solid #eee' }}>
-                                <td style={{ padding: '12px' }}>{user.name}</td>
-                                <td style={{ padding: '12px' }}>{user.email}</td>
-                                <td style={{ padding: '12px' }}>{user._id}</td>
-                                <td style={{ padding: '12px', textAlign: 'center' }}>
+                            <tr key={user._id}>
+                                <td>{user.name}</td>
+                                <td>{user.email}</td>
+                                <td>{user._id}</td>
+                                <td className="col-acciones"> {/* Aplicamos también la clase aquí para la alineación */}
                                     <button
                                         onClick={() => handleDeleteOperative(user._id, user.name)}
-                                        style={{ padding: '8px 12px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                                        className="delete-button"
                                     >
                                         Eliminar
                                     </button>
@@ -111,6 +107,8 @@ const ManageOperativeUsersPage = () => {
                         ))}
                     </tbody>
                 </table>
+            ) : (
+                <p style={{ textAlign: 'center' }}>No hay usuarios operativos para mostrar.</p>
             )}
         </div>
     );
