@@ -1,0 +1,82 @@
+.management-container {
+  padding: 20px;
+  max-width: 900px;
+  margin: 20px auto;
+  font-family: Arial, sans-serif;
+}
+
+.management-container h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.management-table {
+  width: 100%;
+  border-collapse: collapse;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  /* --- ESTA ES LA LÍNEA MÁS IMPORTANTE PARA QUE LOS ANCHOS FUNCIONEN --- */
+  table-layout: fixed; 
+}
+
+/* Estilo para los encabezados de la tabla */
+.management-table th {
+  background-color: #f8f9fa;
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+}
+
+/* Estilo para las celdas de datos de la tabla */
+.management-table td {
+  padding: 15px;
+  border-bottom: 1px solid #dee2e6;
+  vertical-align: middle;
+  word-wrap: break-word; /* Ayuda a cortar textos largos como los IDs */
+  word-break: break-all;
+}
+
+.management-table tbody tr:nth-of-type(even) {
+  background-color: #fdfdfd;
+}
+
+/* --- ESTILOS PARA EL ANCHO Y ALINEACIÓN DE LAS COLUMNAS --- */
+/* Ahora, al cambiar estos porcentajes, SÍ verás el cambio */
+.management-table .col-nombre {
+  width: 44%;
+    text-align: center;
+}
+
+.management-table .col-email {
+  width: 90%;
+    text-align: center;
+}
+
+.management-table .col-id {
+  width: 50%;
+    text-align: center;
+}
+
+.management-table .col-acciones {
+  width: 55%;
+  text-align: center;
+}
+
+/* Estilo para el botón de eliminar */
+.delete-button {
+  padding: 8px 16px;
+  background-color: #dc3545; /* Rojo */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.delete-button:hover {
+  background-color: #c82333; /* Rojo más oscuro */
+}

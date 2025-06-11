@@ -1,7 +1,7 @@
-// src/pages/ManageOperativeUsersPage.jsx
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
-
+import './ManageOperativeUsersPage.css'; 
 const ManageOperativeUsersPage = () => {
     const [operativeUsers, setOperativeUsers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -81,7 +81,7 @@ const ManageOperativeUsersPage = () => {
             {operativeUsers.length > 0 ? (
                 <table className="management-table">
                     <thead>
-                        {/* --- CORRECCIÓN APLICADA AQUÍ --- */}
+                  
                         <tr>
                             <th className="col-nombre">Nombre</th>
                             <th className="col-email">Email</th>

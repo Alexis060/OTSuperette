@@ -1,0 +1,82 @@
+/* src/pages/ManageProducts.css */
+
+.management-container {
+  padding: 20px;
+  max-width: 1000px; 
+  margin: 50px auto;
+  font-family: Arial, sans-serif;
+}
+
+.management-container h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.management-table {
+  width: 100%;
+  border-collapse: collapse;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  table-layout: fixed; /* Crucial para que los anchos de columna se respeten */
+}
+
+/* Estilos generales para celdas */
+.management-table th, .management-table td {
+  padding: 15px;
+  border-bottom: 5px solid #dee2e6;
+  vertical-align: middle;
+  word-wrap: break-word; 
+}
+
+.management-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+  text-align: left; 
+}
+
+.management-table tbody tr:nth-of-type(even) {
+  background-color: #fdfdfd;
+}
+
+.management-table .col-image {
+  width: 10%;
+  text-align: center;
+}
+
+.management-table .col-product-name {
+  width: 40%;
+    text-align: center;
+}
+
+.management-table .col-price {
+  width: 15%;
+  text-align: right;
+}
+
+.management-table .col-stock {
+  width: 15%;
+  text-align: center;
+}
+
+.management-table .col-actions {
+  width: 20%;
+  text-align: center;
+}
+
+/* Botón de eliminar*/
+.delete-button {
+  padding: 8px 16px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.delete-button:hover {
+  background-color: #c82333;
+}
