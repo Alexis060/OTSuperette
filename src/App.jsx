@@ -18,16 +18,21 @@ import Cart from './pages/Cart';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import DetallePokemon from './pages/DetallePokemon';
+import CategoryPage from './pages/CategoryPage';
+import SearchResultsPage from './pages/SearchResultsPage';
 
-// Importa las nuevas páginas de Administración y Gestión
+// Importa las páginas de Administración y Gestión
+import DashboardPage from './pages/DashboardPage';
 import CreateOperativeUserPage from './pages/CreateOperativeUserPage';
 import ManageOperativeUsersPage from './pages/ManageOperativeUsersPage';
+import EditUserPage from './pages/EditUserPage'; 
 import AddProductPage from './pages/AddProductPage';
 import ManageProductsPage from './pages/ManageProductsPage';
-import CategoryPage from './pages/CategoryPage';
-import SearchResultsPage from './pages/SearchResultsPage'; // <--- NUEVA IMPORTACIÓN
+import EditProductPage from './pages/EditProductPage';
+import ManageCategoriesPage from './pages/ManageCategoriesPage';
+import EditCategoryPage from './pages/EditCategoryPage';
 
-// Importa tus estilos
+// Importa estilos
 import 'boxicons/css/boxicons.min.css';
 import './App.css';
 
@@ -41,14 +46,11 @@ function App() {
             <main className="main-content">
               <Routes>
                 {/* --- Rutas Públicas --- */}
-                {/* Cualquiera puede acceder a estas rutas */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/" element={<Home />} />
                 <Route path="/categorias" element={<Categories />} />
                 <Route path="/category/:categoryName" element={<CategoryPage />} />
-                
-                <Route path="/search" element={<SearchResultsPage />} /> {/* <--- RUTA AÑADIDA PARA LA BÚSQUEDA */}
-                
+                <Route path="/search" element={<SearchResultsPage />} />
                 <Route path="/ofertas" element={<Offers />} />
                 <Route path="/contacto" element={<Contact />} />
                 <Route path="/pokemon/:id" element={<DetallePokemon />} />
@@ -56,23 +58,25 @@ function App() {
                 <Route path="/carrito" element={<Cart />} />
 
                 {/* --- Rutas Protegidas para CUALQUIER Usuario Autenticado --- */}
-                {/* Solo usuarios logueados (sin importar el rol) pueden acceder */}
                 <Route element={<ProtectedRoute />}>
                   <Route path="/perfil" element={<Profile />} />
                 </Route>
 
-                {/* --- Rutas Protegidas solo para Administradores ('admin') --- */}
-                {/* Solo usuarios con rol 'admin' pueden acceder */}
+                {/* --- Rutas Protegidas para Operativos y Administradores --- */}
+                <Route element={<ProtectedRoute allowedRoles={['operative', 'admin']} />}>
+                  <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route path="/products/add" element={<AddProductPage />} />
+                  <Route path="/manage-products" element={<ManageProductsPage />} />
+                  <Route path="/edit-product/:productId" element={<EditProductPage />} />
+                  <Route path="/manage-categories" element={<ManageCategoriesPage />} />
+                  <Route path="/edit-category/:id" element={<EditCategoryPage />} />
+                </Route>
+                
+                {/* --- Rutas Protegidas ADICIONALES solo para 'admin' --- */}
                 <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
                   <Route path="/admin/create-operative" element={<CreateOperativeUserPage />} />
                   <Route path="/admin/manage-users" element={<ManageOperativeUsersPage />} />
-                </Route>
-
-                {/* --- Rutas Protegidas para Operativos y Administradores --- */}
-                {/* Solo usuarios con rol 'operative' o 'admin' pueden acceder */}
-                <Route element={<ProtectedRoute allowedRoles={['operative', 'admin']} />}>
-                  <Route path="/products/add" element={<AddProductPage />} />
-                  <Route path="/manage-products" element={<ManageProductsPage />} />
+                  <Route path="/admin/edit-user/:userId" element={<EditUserPage />} /> {/* <--- RUTA AÑADIDA */}
                 </Route>
                 
                 {/* --- Ruta para Páginas No Encontradas (404) --- */}

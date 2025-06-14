@@ -1,24 +1,61 @@
 // src/pages/AddProductPage.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext'; // Ajusta la ruta si es diferente
 
 const AddProductPage = () => {
+    // Estados para el formulario del nuevo producto
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
     const [imageUrl, setImageUrl] = useState('');
     const [stock, setStock] = useState(0);
-    const [category, setCategory] = useState('snacks'); 
+    const [category, setCategory] = useState(''); // Ahora guardará el ID de la categoría seleccionada
+
+    // --- 1. NUEVOS ESTADOS PARA MANEJAR LAS CATEGORÍAS DINÁMICAS ---
+    const [availableCategories, setAvailableCategories] = useState([]);
+    const [loadingCategories, setLoadingCategories] = useState(true);
+
+    // Estados para mensajes de feedback
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
     const { token } = useAuth();
+
+    // --- 2. useEffect PARA OBTENER LAS CATEGORÍAS DESDE EL BACKEND ---
+    // Este efecto se ejecuta una sola vez cuando el componente se monta
+    useEffect(() => {
+        const fetchCategories = async () => {
+            setLoadingCategories(true);
+            try {
+                // Usamos una ruta relativa asumiendo que tienes el proxy de Vite configurado
+                const response = await fetch('http://localhost:5000/api/categories');
+                const data = await response.json();
+
+                if (response.ok) {
+                    setAvailableCategories(data || []);
+                    // Si hay categorías, establece la primera como la seleccionada por defecto
+                    if (data && data.length > 0) {
+                        setCategory(data[0]._id);
+                    }
+                } else {
+                    setError('Error: No se pudieron cargar las categorías desde el servidor.');
+                }
+            } catch (err) {
+                console.error("Error fetching categories:", err);
+                setError('Error de conexión al cargar categorías.');
+            } finally {
+                setLoadingCategories(false);
+            }
+        };
+
+        fetchCategories();
+    }, []); // El array de dependencias vacío [] asegura que se ejecute solo una vez
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setMessage('');
         setError('');
 
-        if (!name || !price || !imageUrl || !category) { // Se añade validación para categoría
-            setError('Nombre, precio, URL de imagen y categoría son requeridos.');
+        if (!name || !price || !imageUrl || !category) {
+            setError('Todos los campos, incluida la categoría, son requeridos.');
             return;
         }
         const numericPrice = parseFloat(price);
@@ -32,7 +69,7 @@ const AddProductPage = () => {
             return;
         }
 
-        const apiUrl = 'http://localhost:5000/api/products'; 
+        const apiUrl = '/api/products'; // Usamos ruta relativa por el proxy
 
         try {
             const response = await fetch(apiUrl, {
@@ -41,12 +78,12 @@ const AddProductPage = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-                body: JSON.stringify({ 
-                    name, 
-                    price: numericPrice, 
+                body: JSON.stringify({
+                    name,
+                    price: numericPrice,
                     imageUrl,
                     stock: numericStock,
-                    category: category // <--- 3. AÑADE LA CATEGORÍA AL BODY DE LA PETICIÓN
+                    category: category // Se envía el ID de la categoría seleccionada
                 }),
             });
 
@@ -54,12 +91,15 @@ const AddProductPage = () => {
 
             if (response.ok && data.success) {
                 setMessage(data.message || 'Producto agregado exitosamente.');
-                // Limpiar el formulario completo
+                // Limpiar el formulario
                 setName('');
                 setPrice('');
                 setImageUrl('');
                 setStock(0);
-                setCategory('snacks'); // También resetea la categoría al valor por defecto
+                // Resetea la categoría al primer elemento de la lista
+                if (availableCategories.length > 0) {
+                    setCategory(availableCategories[0]._id);
+                }
             } else {
                 setError(data.message || `Error (${response.status}): No se pudo agregar el producto.`);
             }
@@ -73,77 +113,51 @@ const AddProductPage = () => {
         <div className="page-container" style={{ padding: '20px', maxWidth: '600px', margin: '20px auto' }}>
             <h1>Agregar Nuevo Producto</h1>
             <form onSubmit={handleSubmit}>
+                {/* Campos de Nombre, Precio, Imagen y Stock */}
                 <div style={{ marginBottom: '15px' }}>
                     <label htmlFor="name" style={{ display: 'block', marginBottom: '5px' }}>Nombre del Producto:</label>
-                    <input
-                        type="text"
-                        id="name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                        style={{ width: '100%', padding: '10px', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #ccc' }}
-                    />
+                    <input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} required style={{ width: '100%', padding: '10px' }} />
                 </div>
                 <div style={{ marginBottom: '15px' }}>
                     <label htmlFor="price" style={{ display: 'block', marginBottom: '5px' }}>Precio:</label>
-                    <input
-                        type="number"
-                        id="price"
-                        value={price}
-                        onChange={(e) => setPrice(e.target.value)}
-                        required
-                        min="0"
-                        step="0.01"
-                        style={{ width: '100%', padding: '10px', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #ccc' }}
-                    />
+                    <input type="number" id="price" value={price} onChange={(e) => setPrice(e.target.value)} required min="0" step="0.01" style={{ width: '100%', padding: '10px' }} />
                 </div>
                 <div style={{ marginBottom: '15px' }}>
                     <label htmlFor="imageUrl" style={{ display: 'block', marginBottom: '5px' }}>URL de la Imagen:</label>
-                    <input
-                        type="text"
-                        id="imageUrl"
-                        value={imageUrl}
-                        onChange={(e) => setImageUrl(e.target.value)}
-                        required
-                        placeholder="https://ejemplo.com/imagen.jpg"
-                        style={{ width: '100%', padding: '10px', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #ccc' }}
-                    />
+                    <input type="text" id="imageUrl" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} required placeholder="https://ejemplo.com/imagen.jpg" style={{ width: '100%', padding: '10px' }} />
                 </div>
                 <div style={{ marginBottom: '15px' }}>
                     <label htmlFor="stock" style={{ display: 'block', marginBottom: '5px' }}>Stock (Cantidad):</label>
-                    <input
-                        type="number"
-                        id="stock"
-                        value={stock}
-                        onChange={(e) => setStock(e.target.value)}
-                        min="0"
-                        step="1"
-                        style={{ width: '100%', padding: '10px', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #ccc' }}
-                    />
+                    <input type="number" id="stock" value={stock} onChange={(e) => setStock(e.target.value)} min="0" step="1" style={{ width: '100%', padding: '10px' }} />
                 </div>
 
-                {/* --- 2.  CAMPO DE SELECCIÓN PARA LA CATEGORÍA --- */}
+                {/* --- 3. MENÚ DESPLEGABLE DE CATEGORÍAS DINÁMICO --- */}
                 <div style={{ marginBottom: '20px' }}>
                     <label htmlFor="category" style={{ display: 'block', marginBottom: '5px' }}>Categoría:</label>
-                    <select
-                        id="category"
-                        value={category}
-                        onChange={(e) => setCategory(e.target.value)}
-                        required
-                        style={{ width: '100%', padding: '10px', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #ccc' }}
-                    >
-                        <option value="snacks">Snacks</option>
-                        <option value="higiene">Higiene</option>
-                        <option value="bebidas">Bebidas</option>
-                        <option value="lacteos">Lácteos</option>
-                    </select>
+                    {loadingCategories ? (
+                        <p>Cargando categorías...</p>
+                    ) : (
+                        <select
+                            id="category"
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value)}
+                            required
+                            style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }}
+                        >
+                            {availableCategories.length > 0 ? (
+                                availableCategories.map(cat => (
+                                    <option key={cat._id} value={cat._id}>
+                                        {cat.name}
+                                    </option>
+                                ))
+                            ) : (
+                                <option value="" disabled>No hay categorías. Por favor, crea una desde el panel de gestión.</option>
+                            )}
+                        </select>
+                    )}
                 </div>
-                {/* ---------------------------------------------------- */}
 
-                <button
-                    type="submit"
-                    style={{ padding: '12px 20px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '16px' }}
-                >
+                <button type="submit" style={{ padding: '12px 20px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '16px' }} >
                     Agregar Producto
                 </button>
             </form>

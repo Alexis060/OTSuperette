@@ -1,6 +1,6 @@
 // src/context/AuthContext.jsx
 import React, { createContext, useReducer, useContext, useEffect, useCallback, useState } from 'react';
-import { isTokenValid } from '../utils/auth'; // Validar validez del token
+import { isTokenValid } from '../utils/auth'; 
 
 const AuthContext = createContext(null);
 
@@ -56,7 +56,7 @@ export const AuthProvider = ({ children }) => {
           userObject = JSON.parse(storedUser);
         } catch (e) {
           console.error("Error parsing stored user from localStorage", e);
-          localStorage.removeItem('user'); // Limpiar usuario corrupto
+          localStorage.removeItem('user'); // Limpiar usuario 
         }
       }
 
@@ -145,7 +145,7 @@ export const AuthProvider = ({ children }) => {
       isAuth: state.isAuth,
       user: state.user,
       token: state.token,
-      loading, // Añade loading al contexto
+      loading, 
       login,
       logout,
     }}>

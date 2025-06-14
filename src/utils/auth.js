@@ -11,12 +11,11 @@ export const isTokenValid = () => {
     }
   };
   
-  // Añade esta función
+
   export const clearAuthData = () => {
     localStorage.removeItem('token');
   };
-  
-  // Si necesitas también guardar el token
+
   export const saveAuthData = (token) => {
     localStorage.setItem('token', token);
   };

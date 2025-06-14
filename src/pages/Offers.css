@@ -2,5 +2,5 @@
 .offers-container {
     text-align: left; /* Alinea todo a la izquierda */
     padding-left: 100px !important; /* Añade espacio desde el borde izquierdo */
-    margin-left: 0; /* Elimina cualquier margen predeterminado */
+    margin-left: 0; 
   }

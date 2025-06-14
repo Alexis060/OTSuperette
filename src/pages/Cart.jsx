@@ -13,9 +13,9 @@ function Cart() {
   } = useCart();
   const navigate = useNavigate();
 
-  // LOG AÑADIDO PARA DIAGNÓSTICO
+  // LOG PARA DIAGNÓSTICO
   console.log(
-    `[CartPage RENDER] Timestamp: ${new Date().toISOString()}`, // Asumimos que este componente es una página de carrito
+    `[CartPage RENDER] Timestamp: ${new Date().toISOString()}`,
     'Loading (from CartContext):', loading,
     'Cart items (from CartContext):', JSON.stringify(cart, null, 2)
   );
@@ -42,10 +42,10 @@ function Cart() {
 
       {loading ? (
         // Mensaje de carga un poco más específico para saber de dónde viene
-        <div className="loading-cart">Cargando carrito (visto desde CartPage)...</div>
+        <div className="loading-cart">Cargando carrito...</div>
       ) : cart.length === 0 ? (
         // Mensaje de carrito vacío un poco más específico
-        <p className="empty-cart-message">Tu carrito está vacío (visto desde CartPage).</p>
+        <p className="empty-cart-message">Tu carrito está vacío.</p>
       ) : (
         <div className="cart-items">
           {cart.map((product) => {

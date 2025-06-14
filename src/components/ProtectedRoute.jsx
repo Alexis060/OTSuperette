@@ -20,7 +20,7 @@ const ProtectedRoute = ({ allowedRoles }) => {
   if (allowedRoles && (!user || !allowedRoles.includes(user.role))) {
     // Redirige a una página de "No Autorizado" o a la página de inicio
     console.warn(`Acceso denegado. Rol actual: ${user?.role}. Roles permitidos: ${allowedRoles.join(', ')}`);
-    return <Navigate to="/" replace />; // O a una página específica de "No Autorizado"
+    return <Navigate to="/" replace />;
   }
 
   // Si está autenticado y tiene el rol permitido (o no se especificaron roles), renderiza el contenido de la ruta

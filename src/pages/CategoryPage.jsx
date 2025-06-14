@@ -15,8 +15,7 @@ const CategoryPage = () => {
             setLoading(true);
             setError('');
             try {
-                // Usando la URL completa como en tu versión original.
-                // Si tienes el proxy de Vite configurado, podrías cambiar esto a solo `/api/products/category/${categoryName}`
+    
                 const response = await fetch(`http://localhost:5000/api/products/category/${categoryName}`);
                 if (!response.ok) {
                     const errorData = await response.json().catch(() => ({}));
@@ -35,7 +34,7 @@ const CategoryPage = () => {
         fetchProductsByCategory();
     }, [categoryName]);
 
-    // --- Renderizado Condicional (sin cambios) ---
+    // --- Renderizado Condicional 
     if (loading) {
         return <div style={{ textAlign: 'center', padding: '50px', fontSize: '1.2em' }}>Cargando productos...</div>;
     }
@@ -43,7 +42,7 @@ const CategoryPage = () => {
         return <div style={{ textAlign: 'center', padding: '50px', color: 'red' }}>{error}</div>;
     }
 
-    // --- Renderizado Principal de la Página (con el botón actualizado) ---
+    // --- Renderizado Principal de la Página 
     return (
         <div className="page-container" style={{ padding: '20px' }}>
             <h1 style={{ textTransform: 'capitalize', textAlign: 'center', marginBottom: '30px' }}>
@@ -66,7 +65,7 @@ const CategoryPage = () => {
                                 justifyContent: 'space-between'
                             }}
                         >
-                            <Link to={`/product/${product._id}`}> {/* Asumo que tienes una ruta /product/:id */}
+                            <Link to={`/product/${product._id}`}> 
                                 <img 
                                   src={product.image} 
                                   alt={product.name} 

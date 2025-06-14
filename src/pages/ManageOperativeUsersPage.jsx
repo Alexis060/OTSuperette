@@ -1,7 +1,9 @@
-
+// src/pages/ManageOperativeUsersPage.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
-import './ManageOperativeUsersPage.css'; 
+import { Link } from 'react-router-dom'; 
+import './ManageUsers.css';
+
 const ManageOperativeUsersPage = () => {
     const [operativeUsers, setOperativeUsers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -13,14 +15,9 @@ const ManageOperativeUsersPage = () => {
         setLoading(true);
         setError('');
         setFeedbackMessage('');
-        
-        const apiUrl = 'http://localhost:5000/api/admin/users/operatives';
-
         try {
-            const response = await fetch(apiUrl, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
+            const response = await fetch('http://localhost:5000/api/admin/users/operatives', {
+                headers: { 'Authorization': `Bearer ${token}` },
             });
             const data = await response.json();
             if (response.ok && data.success) {
@@ -45,14 +42,11 @@ const ManageOperativeUsersPage = () => {
     const handleDeleteOperative = async (userIdToDelete, userName) => {
         setFeedbackMessage('');
         setError('');
-        if (window.confirm(`¿Estás seguro de que quieres eliminar al usuario operativo "${userName}"? Esta acción no se puede deshacer.`)) {
-            const deleteApiUrl = `http://localhost:5000/api/admin/users/operative/${userIdToDelete}`;
+        if (window.confirm(`¿Estás seguro de que quieres eliminar al usuario operativo "${userName}"?`)) {
             try {
-                const response = await fetch(deleteApiUrl, {
+                const response = await fetch(`http://localhost:5000/api/admin/users/operative/${userIdToDelete}`, {
                     method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
+                    headers: { 'Authorization': `Bearer ${token}` },
                 });
                 const data = await response.json();
                 if (response.ok && data.success) {
@@ -81,7 +75,6 @@ const ManageOperativeUsersPage = () => {
             {operativeUsers.length > 0 ? (
                 <table className="management-table">
                     <thead>
-                  
                         <tr>
                             <th className="col-nombre">Nombre</th>
                             <th className="col-email">Email</th>
@@ -92,16 +85,24 @@ const ManageOperativeUsersPage = () => {
                     <tbody>
                         {operativeUsers.map(user => (
                             <tr key={user._id}>
-                                <td>{user.name}</td>
-                                <td>{user.email}</td>
-                                <td>{user._id}</td>
-                                <td className="col-acciones"> {/* Aplicamos también la clase aquí para la alineación */}
-                                    <button
-                                        onClick={() => handleDeleteOperative(user._id, user.name)}
-                                        className="delete-button"
-                                    >
-                                        Eliminar
-                                    </button>
+                                <td className="col-nombre">{user.name}</td>
+                                <td className="col-email">{user.email}</td>
+                                <td className="col-id">{user._id}</td>
+                                <td className="col-acciones">
+                                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                                        {/* --- BOTÓN DE EDITAR AÑADIDO --- */}
+                                        <Link to={`/admin/edit-user/${user._id}`}>
+                                            <button style={{ padding: '8px 12px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+                                                Editar
+                                            </button>
+                                        </Link>
+                                        <button
+                                            onClick={() => handleDeleteOperative(user._id, user.name)}
+                                            className="delete-button"
+                                        >
+                                            Eliminar
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))}

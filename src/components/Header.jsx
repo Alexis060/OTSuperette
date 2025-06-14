@@ -15,31 +15,24 @@ function Header() {
   const { cartCount } = useCart(); 
   const { isAuth, user, logout } = useAuth();
 
-  // --- INICIO DE LA FUNCIÓN handleSearch 
   const handleSearch = (e) => {
     e.preventDefault();
     const query = searchTerm.trim();
+    if (!query) return;
 
-    if (!query) return; // No hacer nada si la búsqueda está vacía
-
-    // Huevo de Pascua: si la búsqueda empieza con "pokemon:", busca un Pokémon.
     if (query.toLowerCase().startsWith('pokemon:')) {
-      // Extrae el número después de "pokemon:"
       const pokemonId = query.substring(8).trim();
       const isNumber = /^\d+$/.test(pokemonId);
-      
       if (isNumber) {
         navigate(`/pokemon/${pokemonId}`);
       } else {
         alert("Para buscar un Pokémon, usa el formato 'pokemon: [número]'. Ej: pokemon: 25");
       }
     } else {
-      // Búsqueda Normal: Navega a la nueva página de resultados de búsqueda de productos.
       navigate(`/search?query=${encodeURIComponent(query)}`);
     }
-
-    setSearchTerm(''); // Limpia la barra de búsqueda después de la acción
-    if(menuOpen) setMenuOpen(false); // Cierra el menú móvil si estaba abierto
+    setSearchTerm('');
+    if(menuOpen) setMenuOpen(false);
   };
 
   const handleLogout = () => {
@@ -53,14 +46,6 @@ function Header() {
       }
     }
   };
-
-  // Cierra el menú y navega (esta función no se usaba explícitamente en tu código original para los Link,
-  // pero la mantengo por si la necesitas o si la usas en otro lado. Los Link con onClick={() => setMenuOpen(false)} ya hacen esto.)
-  // const handleNavClick = (path) => { 
-  //   setMenuOpen(false);
-  //   navigate(path);
-  // };
-
 
   return (
     <header className="header">
@@ -79,7 +64,7 @@ function Header() {
       <form onSubmit={handleSearch} className="search-bar">
         <input
           type="text"
-          placeholder="Buscar productos..." // <-- CAMBIO EN EL PLACEHOLDER
+          placeholder="Buscar productos..."
           className="search-input"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -130,25 +115,16 @@ function Header() {
           <li><Link to="/" onClick={() => setMenuOpen(false)}>Inicio</Link></li>
           <li><Link to="/contacto" onClick={() => setMenuOpen(false)}>Ayuda</Link></li>
           
-          {/* Enlaces condicionales para Administradores */}
-          {isAuth && user && user.role === 'admin' && (
-            <> {/* Usamos Fragment para agrupar múltiples LIs si hay más de uno para admin */}
-              <li><Link to="/admin/create-operative" onClick={() => setMenuOpen(false)}>Crear Operativo</Link></li>
-              <li><Link to="/admin/manage-users" onClick={() => setMenuOpen(false)}>Gestionar Operativos</Link></li>
-            </>
+          {/* === INICIO DE LA SIMPLIFICACIÓN === */}
+          {/* Ahora solo mostramos UN enlace si el usuario es admin u operativo */}
+          {isAuth && user && (user.role === 'admin' || user.role === 'operative') && (
+            <li><Link to="/dashboard" onClick={() => setMenuOpen(false)}>Panel de Control</Link></li>
           )}
-          
-          {/* Enlace condicional para Operativos y Administradores */}
-          {isAuth && user && (user.role === 'operative' || user.role === 'admin') && (
-            <> {/* Usamos Fragment para agrupar si hay más de un enlace para estos roles */}
-              <li><Link to="/products/add" onClick={() => setMenuOpen(false)}>Agregar Producto</Link></li>
-              <li><Link to="/manage-products" onClick={() => setMenuOpen(false)}>Gestionar Productos</Link></li>
-            </>
-          )}
+          {/* === FIN DE LA SIMPLIFICACIÓN === */}
 
           <li><Link to="/categorias" onClick={() => setMenuOpen(false)}>Categorías</Link></li>
           <li><Link to="/ofertas" onClick={() => setMenuOpen(false)}>Ofertas</Link></li>
-          <li><Link to="/pokemon/1" onClick={() => setMenuOpen(false)}>Pokémon</Link></li> {/* Ejemplo de enlace Pokémon */}
+ 
 
           {/* Opción de Login/Logout en el menú móvil */}
           {isAuth ? (

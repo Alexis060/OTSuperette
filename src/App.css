@@ -23,7 +23,7 @@ body, html {
 
 /* Footer fijo */
 .footer {
-  background-color: #e31837; /* Rojo corporativo */
+  background-color: #a12f26;
   color: white;
   padding: 1.5rem;
   text-align: center;
@@ -31,7 +31,7 @@ body, html {
   margin-top: auto; /* Mantiene el footer abajo */
 }
 
-/* Estilos existentes que debes conservar */
+
 .logo {
   height: 6em;
   padding: 1.5em;

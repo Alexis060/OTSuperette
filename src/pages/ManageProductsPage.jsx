@@ -1,7 +1,8 @@
 // src/pages/ManageProductsPage.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
-import './ManageProducts.css'; // <-- 1. IMPORTAMOS EL NUEVO ARCHIVO CSS
+import { Link } from 'react-router-dom';
+import './ManageProducts.css';
 
 const ManageProductsPage = () => {
     const [products, setProducts] = useState([]);
@@ -38,14 +39,12 @@ const ManageProductsPage = () => {
     const handleDeleteProduct = async (productId, productName) => {
         setFeedbackMessage('');
         setError('');
-        if (window.confirm(`¿Estás seguro de que quieres eliminar el producto "${productName}"? Esta acción no se puede deshacer.`)) {
+        if (window.confirm(`¿Estás seguro de que quieres eliminar el producto "${productName}"?`)) {
             const deleteApiUrl = `http://localhost:5000/api/products/${productId}`;
             try {
                 const response = await fetch(deleteApiUrl, {
                     method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
+                    headers: { 'Authorization': `Bearer ${token}` },
                 });
                 const data = await response.json();
                 if (response.ok && data.success) {
@@ -56,7 +55,7 @@ const ManageProductsPage = () => {
                 }
             } catch (err) {
                 console.error('Error deleting product:', err);
-                setError('Error de conexión o del servidor al eliminar el producto.');
+                setError('Error de conexión o del servidor.');
             }
         }
     };
@@ -66,7 +65,6 @@ const ManageProductsPage = () => {
     }
 
     return (
-        // --- 2. APLICAMOS LAS CLASES CSS ---
         <div className="management-container">
             <h1>Gestionar Productos</h1>
             {error && <p style={{ color: 'red', textAlign: 'center' }}>Error: {error}</p>}
@@ -99,12 +97,20 @@ const ManageProductsPage = () => {
                                     <td className="col-stock">{product.stock}</td>
                                     <td className="col-actions">
                                         {user && (user.role === 'admin' || user.role === 'operative') && (
-                                            <button
-                                                onClick={() => handleDeleteProduct(product._id, product.name)}
-                                                className="delete-button"
-                                            >
-                                                Eliminar
-                                            </button>
+                                            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                                                {/* --- BOTÓN DE EDITAR AÑADIDO --- */}
+                                                <Link to={`/edit-product/${product._id}`}>
+                                                    <button style={{ padding: '8px 12px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+                                                        Editar
+                                                    </button>
+                                                </Link>
+                                                <button
+                                                    onClick={() => handleDeleteProduct(product._id, product.name)}
+                                                    className="delete-button"
+                                                >
+                                                    Eliminar
+                                                </button>
+                                            </div>
                                         )}
                                     </td>
                                 </tr>

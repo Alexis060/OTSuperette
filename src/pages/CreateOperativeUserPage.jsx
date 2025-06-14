@@ -10,7 +10,7 @@ const CreateOperativeUserPage = () => {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const { token } = useAuth(); // Obtén el token del admin logueado desde AuthContext
+  const { token } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,7 +22,6 @@ const CreateOperativeUserPage = () => {
       return;
     }
 
-    // La URL base del api
     const apiUrl = 'http://localhost:5000/api/admin/users/create-operative'; 
 
     try {
@@ -53,7 +52,7 @@ const CreateOperativeUserPage = () => {
   };
 
   return (
-    <div className="page-container" style={{ padding: '20px' }}> {/* Estilo en línea simple o usa tu CSS */}
+    <div className="page-container" style={{ padding: '20px' }}> 
       <h1>Crear Nuevo Usuario Operativo</h1>
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '10px' }}>

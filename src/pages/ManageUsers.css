@@ -1,3 +1,5 @@
+/* src/pages/ManageUsers.css */
+
 .management-container {
   padding: 20px;
   max-width: 900px;
@@ -17,10 +19,9 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   overflow: hidden;
-  table-layout: fixed; 
+  table-layout: fixed; /* Importante para que los anchos de columna se respeten */
 }
 
-/* Estilo para los encabezados de la tabla */
 .management-table th {
   background-color: #f8f9fa;
   padding: 15px;
@@ -30,44 +31,38 @@
   border-bottom: 2px solid #dee2e6;
 }
 
-/* Estilo para las celdas de datos de la tabla */
 .management-table td {
   padding: 15px;
   border-bottom: 1px solid #dee2e6;
   vertical-align: middle;
-  word-wrap: break-word; /* Ayuda a cortar textos largos como los IDs */
-  word-break: break-all;
+  word-wrap: break-word;
 }
 
 .management-table tbody tr:nth-of-type(even) {
   background-color: #fdfdfd;
 }
 
-/* --- ESTILOS PARA EL ANCHO Y ALINEACIÓN DE LAS COLUMNAS --- */
+/* Estilos para ancho y alineación de columnas */
 .management-table .col-nombre {
-  width: 44%;
-    text-align: center;
+  width: 25%;
 }
 
 .management-table .col-email {
-  width: 90%;
-    text-align: center;
+  width: 30%;
 }
 
 .management-table .col-id {
-  width: 50%;
-    text-align: center;
+  width: 30%;
 }
 
 .management-table .col-acciones {
-  width: 55%;
+  width: 15%;
   text-align: center;
 }
 
-/* Estilo para el botón de eliminar */
 .delete-button {
   padding: 8px 16px;
-  background-color: #dc3545; 
+  background-color: #dc3545;
   color: white;
   border: none;
   border-radius: 5px;
@@ -76,5 +71,5 @@
 }
 
 .delete-button:hover {
-  background-color: #c82333; 
+  background-color: #c82333;
 }

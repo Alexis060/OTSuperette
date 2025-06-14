@@ -1,7 +1,7 @@
 // src/pages/SearchResultsPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { useCart } from '../context/CartContext'; // <-- 1. IMPORTA el useCart
+import { useCart } from '../context/CartContext'; 
 
 const SearchResultsPage = () => {
     const [searchResults, setSearchResults] = useState([]);
@@ -9,7 +9,7 @@ const SearchResultsPage = () => {
     const [error, setError] = useState('');
     const [searchParams] = useSearchParams();
     const query = searchParams.get('query');
-    const { addToCart } = useCart(); // <--- 2. OBTÉN la función addToCart del contexto
+    const { addToCart } = useCart(); // <--- . OBTÉN la función addToCart del contexto
 
     useEffect(() => {
         if (!query) {
@@ -72,7 +72,7 @@ const SearchResultsPage = () => {
                                 <p style={{ color: '#007bff', fontWeight: 'bold', fontSize: '1.2em', margin: '10px 0' }}>${product.price.toFixed(2)}</p>
                                 <button
                                     style={{ width: '100%', padding: '10px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                                    // --- 3. CONECTA el onClick a la función addToCart ---
+                                    // --- . CONECTA el onClick a la función addToCart ---
                                     onClick={() => addToCart(product)}
                                 >
                                     Agregar al Carrito

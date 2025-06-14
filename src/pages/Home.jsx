@@ -1,15 +1,18 @@
+// src/pages/Home.jsx
+import React from 'react';
 import Banner from '../components/Banner';
 import FeaturedProducts from '../components/FeaturedProducts';
-import Categories from '../pages/Categories';
-import Footer from '../components/Footer';
+import CategoryList from '../components/CategoryList'; 
 
 function Home() {
   return (
     <div>
       <Banner />
-      <h1>Ofertas de temporada</h1>
-      <Categories />
+
+      <CategoryList title="Nuestras Categorías" />
+
       <FeaturedProducts />
+
     </div>
   );
 }
