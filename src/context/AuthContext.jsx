@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
     user: null,
     token: null,
   });
-  const [loading, setLoading] = useState(true); // Para el estado de carga inicial
+  const [loading, setLoading] = useState(true); 
 
   // Efecto para cargar el estado de autenticación inicial desde localStorage
   useEffect(() => {
@@ -102,12 +102,12 @@ export const AuthProvider = ({ children }) => {
   const login = useCallback((apiToken, apiUserData) => {
     console.log('[AuthContext login func] Attempting login. UserData from API:', apiUserData);
     try {
-      if (!apiToken || !apiUserData || !apiUserData.role) { // Asegúrate que userData y su rol existan
+      if (!apiToken || !apiUserData || !apiUserData.role) { 
         console.error('[AuthContext login func] Token, userData, or user role is missing.');
         return false;
       }
       localStorage.setItem('token', apiToken);
-      localStorage.setItem('user', JSON.stringify(apiUserData)); // Guarda el objeto user completo
+      localStorage.setItem('user', JSON.stringify(apiUserData)); 
 
       dispatch({
         type: 'LOGIN',

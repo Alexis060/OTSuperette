@@ -9,7 +9,7 @@ const SearchResultsPage = () => {
     const [error, setError] = useState('');
     const [searchParams] = useSearchParams();
     const query = searchParams.get('query');
-    const { addToCart } = useCart(); // <--- . OBTÉN la función addToCart del contexto
+    const { addToCart } = useCart(); 
 
     useEffect(() => {
         if (!query) {
@@ -22,7 +22,7 @@ const SearchResultsPage = () => {
             setLoading(true);
             setError('');
             try {
-                const response = await fetch(`/api/products/search?q=${encodeURIComponent(query)}`);
+                const response = await fetch(`http://localhost:5000/api/products/search?q=${encodeURIComponent(query)}`);
                 if (!response.ok) {
                     throw new Error('Error al buscar productos.');
                 }
@@ -72,7 +72,7 @@ const SearchResultsPage = () => {
                                 <p style={{ color: '#007bff', fontWeight: 'bold', fontSize: '1.2em', margin: '10px 0' }}>${product.price.toFixed(2)}</p>
                                 <button
                                     style={{ width: '100%', padding: '10px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                                    // --- . CONECTA el onClick a la función addToCart ---
+                                    //CONECTA el onClick a la función addToCart
                                     onClick={() => addToCart(product)}
                                 >
                                     Agregar al Carrito

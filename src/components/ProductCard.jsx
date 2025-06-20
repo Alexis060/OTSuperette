@@ -4,16 +4,15 @@ import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext'; 
 import './ProductCard.css';
 
-const ProductCard = ({ product }) => {
+// Recibe 'onAddToCartError' como prop desde FeaturedProducts.jsx
+const ProductCard = ({ product, onAddToCartError }) => {
     const { addToCart } = useCart();
 
-    // Comprobación de seguridad: No renderizar nada si no hay producto o datos esenciales.
     if (!product || !product._id) {
         console.warn("ProductCard renderizado sin un producto válido.");
         return null;
     }
 
-    // Verificaciones para evitar errores si los datos no existen
     const hasSale = product.isOnSale && typeof product.salePrice === 'number' && product.salePrice > 0;
     const price = typeof product.price === 'number' ? product.price.toFixed(2) : 'N/A';
     const salePrice = hasSale && typeof product.salePrice === 'number' ? product.salePrice.toFixed(2) : 'N/A';
@@ -21,7 +20,6 @@ const ProductCard = ({ product }) => {
 
     return (
         <div className="product-card">
-            {/* Si el producto está en oferta, muestra una insignia */}
             {hasSale && <div className="sale-badge">OFERTA</div>}
             
             <Link to={`/product/${product._id}`} className="product-link">
@@ -34,7 +32,6 @@ const ProductCard = ({ product }) => {
             </Link>
 
             <div className="product-price-container">
-                {/* Lógica condicional para mostrar el precio */}
                 {hasSale ? (
                     <>
                         <span className="original-price">${price}</span>
@@ -46,8 +43,9 @@ const ProductCard = ({ product }) => {
             </div>
 
             <button
-                className="add-to-cart-button" // Usando la clase global de App.css
-                onClick={() => addToCart(product)}
+                className="add-to-cart-button"
+                //El onClick  pasa el producto Y la función de error al contexto.
+                onClick={() => addToCart(product, onAddToCartError)}
             >
                 Agregar al Carrito
             </button>

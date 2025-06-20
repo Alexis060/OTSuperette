@@ -9,6 +9,21 @@
 }
 
 
+/* Estilo para el mensaje de error*/
+.cart-error-message {
+  padding: 1rem;
+  margin: 1rem 0; /* Lo separamos un poco */
+  background-color: #f8d7da; /* Rojo suave de alerta */
+  color: #721c24;       /* Rojo oscuro para el texto */
+  border: 1px solid #f5c6cb;
+  border-radius: 8px; /* Mismo borde redondeado que tus otros elementos */
+  text-align: center;
+  font-weight: bold;
+  animation: fadeIn 0.5s ease-in-out; /* Animación para que aparezca suavemente */
+}
+
+
+
 .cart-items {
   display: flex;
   flex-direction: column;
@@ -74,7 +89,7 @@
   margin-top: 20px;
 }
 
-/* Responsive para móviles */
+/* Responsive */
 @media (max-width: 768px) {
   .cart-item {
     grid-template-columns: 1fr;
@@ -90,5 +105,17 @@
     width: 150px;
     height: 150px;
     margin: 0 auto;
+  }
+}
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

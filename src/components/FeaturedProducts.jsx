@@ -2,14 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import ProductCard from './ProductCard'; 
 
-
-const FeaturedProducts = () => {
+// Recibe 'onAddToCartError' como prop desde Home.jsx
+const FeaturedProducts = ({ onAddToCartError }) => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
     useEffect(() => {
-        // Obtenemos todos los productos desde la API
         const fetchProducts = async () => {
             try {
                 const response = await fetch('http://localhost:5000/api/products');
@@ -17,7 +16,9 @@ const FeaturedProducts = () => {
                     throw new Error('No se pudieron cargar los productos');
                 }
                 const data = await response.json();
+
                 setProducts(Array.isArray(data) ? data.slice(0, 4) : []);
+
             } catch (error) {
                 console.error("Error cargando productos destacados:", error);
                 setError('Error al cargar productos.');
@@ -38,7 +39,12 @@ const FeaturedProducts = () => {
               
                 {products.length > 0 ? (
                     products.map(product => (
-                        <ProductCard key={product._id} product={product} />
+                        // Se sigue pasando la prop 'onAddToCartError' a cada ProductCard
+                        <ProductCard 
+                            key={product._id} 
+                            product={product} 
+                            onAddToCartError={onAddToCartError}
+                        />
                     ))
                 ) : (
                     <p>No hay productos destacados para mostrar.</p>

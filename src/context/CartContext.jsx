@@ -13,7 +13,6 @@ export const CartProvider = ({ children }) => {
   const initialLoadAttemptedForThisAuthSessionRef = useRef(false);
   const isLoggingOutRef = useRef(false);
 
-  // DEBUG: useEffect to log cart and loading state changes
   useEffect(() => {
     console.log("[CartContext DEBUG] Cart state changed:", JSON.stringify(cart, null, 2));
   }, [cart]);
@@ -21,8 +20,9 @@ export const CartProvider = ({ children }) => {
   useEffect(() => {
     console.log("[CartContext DEBUG] Loading state changed:", loading);
   }, [loading]);
-  // FIN DEBUG
 
+
+  
   const handleApiResponse = useCallback((apiResponseData, operationName) => {
     console.log(`[CartContext] handleApiResponse called for (${operationName}). Raw data:`, JSON.stringify(apiResponseData, null, 2));
     if (apiResponseData && apiResponseData.cart && Array.isArray(apiResponseData.cart.products)) {
@@ -32,7 +32,6 @@ export const CartProvider = ({ children }) => {
           return { _id: null, name: 'Producto no disponible', price: 0, image: '/productos/default.jfif', quantity, cartItemId };
         }
         const imagePath = productDetails.image || '/productos/default.jfif';
-        // console.log(`[CartContext] Producto (${operationName}): ${productDetails.name}, Raw image from backend: ${productDetails.image}, Derived imagePath: ${imagePath}`); // Log original, bueno mantenerlo
         return { 
           _id: productDetails._id, 
           name: productDetails.name, 
@@ -128,11 +127,11 @@ export const CartProvider = ({ children }) => {
                     throw new Error(errorData.message || 'Error cargando carrito (GET /api/cart)');
                 }
                 const data = await res.json();
-                console.log("[CartContext] Data received from GET /api/cart (antes de handleApiResponse):", JSON.stringify(data, null, 2)); // LOG AÑADIDO
-                if (!data || typeof data.cart === 'undefined') { // Chequeo robusto
+                console.log("[CartContext] Data received from GET /api/cart (antes de handleApiResponse):", JSON.stringify(data, null, 2));
+                if (!data || typeof data.cart === 'undefined') {
                   console.error("[CartContext] Invalid data structure from GET /api/cart. 'cart' property missing or data is null.", data);
                   setCart([]);
-                  // Considera no seguir si la estructura es incorrecta
+                
                 } else {
                   handleApiResponse(data, "GET /api/cart");
                 }
@@ -142,7 +141,7 @@ export const CartProvider = ({ children }) => {
               }
             }
           } else {
-             console.log("[CartContext] Carga/fusión inicial ya intentada para esta sesión. No se repite.");
+              console.log("[CartContext] Carga/fusión inicial ya intentada para esta sesión. No se repite.");
           }
         } else { 
           console.log("[CartContext] Usuario no autenticado. Reseteando flag de carga inicial y cargando guest cart.");
@@ -213,38 +212,38 @@ export const CartProvider = ({ children }) => {
     } else if (!isAuth && cart.length === 0) {
         const currentLocalGuestCart = localStorage.getItem('guestCart');
         if (currentLocalGuestCart && currentLocalGuestCart !== "[]") {
-             console.log('[CartContext] Limpiando guestCart de localStorage porque el carrito de invitado está vacío.');
-             localStorage.setItem('guestCart', "[]");
+            console.log('[CartContext] Limpiando guestCart de localStorage porque el carrito de invitado está vacío.');
+            localStorage.setItem('guestCart', "[]");
         }
     }
   }, [cart, isAuth, token, loading, isMerging, logout]);
 
 
-  const addToCart = async (product) => {
+  const addToCart = async (product, onError) => { 
     console.log("[CartContext] addToCart, producto recibido:", product);
     const imagePath = product.image || (product.images && product.images.length > 0 ? product.images[0] : '/productos/default.jfif');
-    // console.log(`[CartContext] addToCart, imagePath determinado: ${imagePath}`); // Log original
 
     if (isAuth && token) {
+      setLoading(true);
       try {
-        setLoading(true);
+
         const addRes = await fetch('http://localhost:5000/api/cart/add', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}`},
           body: JSON.stringify({ productId: product._id, quantity: 1 })
         });
-        if (!addRes.ok) {
-            const errorData = await addRes.json().catch(() => ({ message: addRes.statusText }));
-            console.error("[CartContext] Error añadiendo al carrito (auth):", errorData.message);
-            if (addRes.status === 401) logout();
-            // setLoading(false) está en finally
-            return;
-        }
         const data = await addRes.json();
-        console.log("[CartContext] Data received from /add (antes de handleApiResponse):", JSON.stringify(data, null, 2));
+        if (!addRes.ok) {
+            throw new Error(data.message || 'Error del servidor');
+        }
         handleApiResponse(data, "/add");
+        if (onError) onError(null); 
+
       } catch (error) {
         console.error('[CartContext] Excepción en addToCart (auth):', error);
+                console.log('DEBUG: ¿La función onError llegó al contexto?', { existe: !!onError, tipo: typeof onError });
+
+        if (onError) onError(error.message); // Llama al callback con el mensaje de error
       } finally {
         setLoading(false);
       }
@@ -264,25 +263,23 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const removeFromCart = async (productId) => {
+  const removeFromCart = async (productId, onError) => { 
     if (isAuth && token) {
+      setLoading(true);
       try {
-        setLoading(true);
         const removeRes = await fetch(`http://localhost:5000/api/cart/remove/${productId}`, {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` }
         });
-        if (!removeRes.ok) {
-            const errorData = await removeRes.json().catch(() => ({ message: removeRes.statusText }));
-            console.error("[CartContext] Error eliminando del carrito (auth):", errorData.message);
-            if (removeRes.status === 401) logout();
-            return;
-        }
         const data = await removeRes.json();
-        console.log("[CartContext] Data received from /remove (antes de handleApiResponse):", JSON.stringify(data, null, 2));
+        if (!removeRes.ok) throw new Error(data.message || 'Error del servidor');
+        
         handleApiResponse(data, "/remove");
+        if (onError) onError(null);
+
       } catch (error) {
         console.error('[CartContext] Excepción en removeFromCart (auth):', error);
+        if (onError) onError(error.message);
       } finally {
         setLoading(false);
       }
@@ -291,34 +288,52 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const updateQuantity = (productId, newQuantity) => {
-    setCart(prevCart => {
-      if (newQuantity < 1) {
-        return prevCart.filter(item => item._id !== productId);
-      }
-      return prevCart.map(item =>
-        item._id === productId ? { ...item, quantity: newQuantity } : item
-      );
-    });
-  };
-
-  const clearCart = async () => {
+  const updateQuantity = async (productId, newQuantity, onError) => {
+    if (newQuantity < 1) {
+      return removeFromCart(productId, onError);
+    }
+    
     if (isAuth && token) {
       try {
-        setLoading(true);
+        const res = await fetch('http://localhost:5000/api/cart/set-quantity', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ productId, quantity: newQuantity })
+        });
+        
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Error al actualizar cantidad');
+
+        handleApiResponse(data, "/set-quantity");
+        if (onError) onError(null);
+
+      } catch (error) {
+        console.error('[CartContext] Error en updateQuantity:', error);
+        if (onError) onError(error.message);
+      }
+    } else {
+      setCart(prevCart => prevCart.map(item =>
+        item._id === productId ? { ...item, quantity: newQuantity } : item
+      ));
+    }
+  };
+
+  const clearCart = async (onError) => { 
+    if (isAuth && token) {
+      setLoading(true);
+      try {
         const clearRes = await fetch('http://localhost:5000/api/cart/clear', {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` }
         });
         if (!clearRes.ok) {
-          const errorData = await clearRes.json().catch(() => ({ message: clearRes.statusText }));
-          console.error("[CartContext] Error vaciando carrito (auth):", errorData.message);
-          if (clearRes.status === 401) logout();
-        } else {
-          console.log("[CartContext] Carrito vaciado en backend exitosamente.");
-    }
+          const errorData = await clearRes.json().catch(() => ({}));
+          throw new Error(errorData.message || 'Error del servidor');
+        }
+        if(onError) onError(null);
       } catch (error) {
         console.error('[CartContext] Excepción en clearCart (auth):', error);
+        if (onError) onError(error.message);
       } finally {
         setLoading(false);
       }
@@ -326,7 +341,6 @@ export const CartProvider = ({ children }) => {
     setCart([]);
     if (!isAuth) {
       localStorage.removeItem('guestCart');
-      console.log("[CartContext] Carrito de invitado limpiado de localStorage.");
     }
   };
 
