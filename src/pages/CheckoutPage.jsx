@@ -5,6 +5,26 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './CheckoutPage.css';
 
+// FUNCIÓN DE UTILIDAD: ALGORITMO DE LUHN
+// Esta función valida que un número de tarjeta tenga un formato matemáticamente correcto.
+const luhnCheck = (val) => {
+  let sum = 0;
+  let shouldDouble = false;
+  // Recorremos los dígitos de derecha a izquierda
+  for (let i = val.length - 1; i >= 0; i--) {
+    let digit = parseInt(val.charAt(i));
+
+    if (shouldDouble) {
+      if ((digit *= 2) > 9) digit -= 9;
+    }
+
+    sum += digit;
+    shouldDouble = !shouldDouble;
+  }
+  return (sum % 10) === 0;
+};
+
+
 const CheckoutPage = () => {
   const { cart, clearCartFrontend } = useCart(); 
   const { token } = useAuth();
@@ -31,35 +51,67 @@ const CheckoutPage = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  
+  // FUNCIÓN DE CHECKOUT CON VALIDACIÓN AVANZADA
   const handleCheckout = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+    
+    // Simulamos una espera para que la validación se sienta más real
+    await new Promise(resolve => setTimeout(resolve, 1500));
 
+    // 1. VALIDACIÓN DEL NÚMERO DE TARJETA CON ALGORITMO DE LUHN
+    const cardNumber = formData.cardNumber.replace(/\s+/g, '');
+    if (!luhnCheck(cardNumber)) {
+      setError('El número de tarjeta no es válido.');
+      setIsLoading(false);
+      return;
+    }
+
+    // 2. VALIDACIÓN DE LA FECHA DE EXPIRACIÓN
+    const dateParts = formData.expiryDate.split('/');
+    if (dateParts.length !== 2 || dateParts[0].length !== 2 || dateParts[1].length !== 2) {
+      setError('El formato de la fecha de expiración debe ser MM/AA.');
+      setIsLoading(false);
+      return;
+    }
+    const [month, year] = dateParts;
+    const expiryYear = parseInt(year, 10) + 2000;
+    const expiryMonth = parseInt(month, 10);
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+
+    if (expiryYear < currentYear || (expiryYear === currentYear && expiryMonth < currentMonth)) {
+      setError('La tarjeta ha expirado.');
+      setIsLoading(false);
+      return;
+    }
+    
+    // 3. VALIDACIÓN DEL CVV
+    if (!/^\d{3}$/.test(formData.cvv)) {
+      setError('El código CVV debe tener 3 dígitos.');
+      setIsLoading(false);
+      return;
+    }
+
+    // Si todas las validaciones pasan, procedemos con la compra
     try {
-      await axios.post(
-        '/api/cart/checkout',
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.post('/api/cart/checkout', {}, { headers: { Authorization: `Bearer ${token}` } });
       setSuccess(true);
-      clearCartFrontend();
-      setTimeout(() => {
-        navigate('/');
-      }, 3000);
-
+      clearCartFrontend(); 
+      setTimeout(() => navigate('/'), 3000);
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Ocurrió un error al procesar la compra.';
+      const errorMessage = err.response?.data?.message || 'Error de comunicación con el servidor.';
       setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
+
   
+  // Si la compra fue exitosa, muestra este mensaje
   if (success) {
     return (
       <div className="checkout-container success-message">
@@ -70,8 +122,8 @@ const CheckoutPage = () => {
     );
   }
 
-  // Comprueba si el carrito está vacío
-  if (cart.length === 0) {
+  // Si el carrito está vacío (y la compra no ha sido exitosa aún), muestra este mensaje
+  if (cart.length === 0 && !success) {
       return (
           <div className="checkout-container">
               <h2>Checkout</h2>
@@ -132,7 +184,7 @@ const CheckoutPage = () => {
             {error && <p className="error-message">{error}</p>}
             
             <button type="submit" className="checkout-button" disabled={isLoading}>
-              {isLoading ? 'Procesando...' : 'Confirmar Compra'}
+              {isLoading ? 'Validando Pago...' : 'Confirmar Compra'}
             </button>
           </form>
         </div>

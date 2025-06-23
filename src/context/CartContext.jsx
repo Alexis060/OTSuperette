@@ -241,9 +241,7 @@ export const CartProvider = ({ children }) => {
 
       } catch (error) {
         console.error('[CartContext] Excepción en addToCart (auth):', error);
-                console.log('DEBUG: ¿La función onError llegó al contexto?', { existe: !!onError, tipo: typeof onError });
-
-        if (onError) onError(error.message); // Llama al callback con el mensaje de error
+        if (onError) onError(error.message);
       } finally {
         setLoading(false);
       }
@@ -344,6 +342,12 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+  const clearCartFrontend = () => {
+    console.log("[CartContext] Vaciando el carrito solo en el frontend.");
+    setCart([]);
+  };
+
+
   const getTotal = () => {
     if (!Array.isArray(cart)) return '0.00';
     return cart.reduce(
@@ -364,8 +368,17 @@ export const CartProvider = ({ children }) => {
   return (
     <CartContext.Provider
       value={{
-        cart, addToCart, removeFromCart, updateQuantity, clearCart,
-        getTotal, cartCount, loading, isMerging
+        cart,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        clearCart,
+        getTotal,
+        cartCount,
+        loading,
+        isMerging,
+        clearCartFrontend
+     
       }}
     >
       {children}
