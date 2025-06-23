@@ -21,7 +21,7 @@ import Profile from './pages/Profile';
 import DetallePokemon from './pages/DetallePokemon';
 import CategoryPage from './pages/CategoryPage';
 import SearchResultsPage from './pages/SearchResultsPage';
-
+import CheckoutPage from './pages/CheckoutPage';
 
 // Importa las páginas de Administración y Gestión
 import DashboardPage from './pages/DashboardPage';
