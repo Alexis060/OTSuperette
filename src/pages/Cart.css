@@ -33,6 +33,7 @@
 
 /* Item individual - Diseño balanceado */
 .cart-item {
+   display: grid;
   grid-template-columns: 100px 1fr 150px; /* Imagen | Detalles | Controles */
   align-items: center;
   gap: 20px;
