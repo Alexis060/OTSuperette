@@ -1,4 +1,3 @@
-// src/components/ProductCard.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext'; 
@@ -8,15 +7,16 @@ const ProductCard = ({ product, onAddToCartError }) => {
     const { addToCart } = useCart();
 
     if (!product || !product._id) {
-        return null;
+        return null; // No renderizar nada si el producto es inválido
     }
 
+    // Lógica para determinar si hay oferta y formatear precios
     const hasSale = product.isOnSale && typeof product.salePrice === 'number' && product.salePrice > 0;
     const price = typeof product.price === 'number' ? product.price.toFixed(2) : 'N/A';
     const salePrice = hasSale ? product.salePrice.toFixed(2) : 'N/A';
     const imageUrl = product.image || 'https://placehold.co/220x180/eee/ccc?text=Sin+Imagen';
 
-    //VARIABLE PARA VERIFICAR EL STOCK
+    // Variable para verificar si el producto está agotado
     const isOutOfStock = product.stock === 0;
 
     return (
@@ -28,18 +28,28 @@ const ProductCard = ({ product, onAddToCartError }) => {
                 <h3 className="product-name">{product.name || 'Producto sin nombre'}</h3>
             </Link>
 
+       
+            {/*lógica para mostrar los precios en este contenedor */}
             <div className="product-price-container">
-                {/* ... tu lógica de precios ... */}
+                {hasSale ? (
+                    <>
+                        <span className="sale-price">${salePrice}</span>
+                        <span className="original-price">${price}</span>
+                    </>
+                ) : (
+                    <span className="price">${price}</span>
+                )}
             </div>
+         
 
             <button
-                // 1. Añadimos una clase 'disabled' si no hay stock
+                // Se añade una clase 'disabled' si no hay stock
                 className={`add-to-cart-button ${isOutOfStock ? 'disabled' : ''}`}
                 onClick={() => addToCart(product, onAddToCartError)}
-                // 2. Deshabilitamos el botón si no hay stock
+                // Se deshabilita el botón si no hay stock
                 disabled={isOutOfStock}
             >
-                {/* 3. Cambiamos el texto del botón si no hay stock */}
+                {/* Se cambia el texto del botón si no hay stock */}
                 {isOutOfStock ? 'Sin Stock' : 'Agregar al Carrito'}
             </button>
         </div>

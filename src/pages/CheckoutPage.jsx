@@ -5,19 +5,15 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './CheckoutPage.css';
 
-// FUNCIÓN DE UTILIDAD: ALGORITMO DE LUHN
-// Esta función valida que un número de tarjeta tenga un formato matemáticamente correcto.
+// FUNCIÓN DE UTILIDAD: ALGORITMO DE LUHN (sin cambios)
 const luhnCheck = (val) => {
   let sum = 0;
   let shouldDouble = false;
-  // Recorremos los dígitos de derecha a izquierda
   for (let i = val.length - 1; i >= 0; i--) {
     let digit = parseInt(val.charAt(i));
-
     if (shouldDouble) {
       if ((digit *= 2) > 9) digit -= 9;
     }
-
     sum += digit;
     shouldDouble = !shouldDouble;
   }
@@ -26,7 +22,7 @@ const luhnCheck = (val) => {
 
 
 const CheckoutPage = () => {
-  const { cart, clearCartFrontend } = useCart(); 
+  const { cart, clearCartFrontend, getTotal } = useCart(); 
   const { token } = useAuth();
   const navigate = useNavigate();
 
@@ -41,27 +37,20 @@ const CheckoutPage = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
-  const cartTotal = cart.reduce((total, item) => {
-    const price = item.price || 0;
-    return total + item.quantity * price;
-  }, 0).toFixed(2);
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   
-  // FUNCIÓN DE CHECKOUT CON VALIDACIÓN AVANZADA
+  // Función handleCheckout
   const handleCheckout = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
     
-    // Simulamos una espera para que la validación se sienta más real
     await new Promise(resolve => setTimeout(resolve, 1500));
 
-    // 1. VALIDACIÓN DEL NÚMERO DE TARJETA CON ALGORITMO DE LUHN
     const cardNumber = formData.cardNumber.replace(/\s+/g, '');
     if (!luhnCheck(cardNumber)) {
       setError('El número de tarjeta no es válido.');
@@ -69,7 +58,6 @@ const CheckoutPage = () => {
       return;
     }
 
-    // 2. VALIDACIÓN DE LA FECHA DE EXPIRACIÓN
     const dateParts = formData.expiryDate.split('/');
     if (dateParts.length !== 2 || dateParts[0].length !== 2 || dateParts[1].length !== 2) {
       setError('El formato de la fecha de expiración debe ser MM/AA.');
@@ -89,14 +77,12 @@ const CheckoutPage = () => {
       return;
     }
     
-    // 3. VALIDACIÓN DEL CVV
     if (!/^\d{3}$/.test(formData.cvv)) {
       setError('El código CVV debe tener 3 dígitos.');
       setIsLoading(false);
       return;
     }
 
-    // Si todas las validaciones pasan, procedemos con la compra
     try {
       await axios.post('/api/cart/checkout', {}, { headers: { Authorization: `Bearer ${token}` } });
       setSuccess(true);
@@ -111,7 +97,6 @@ const CheckoutPage = () => {
   };
 
   
-  // Si la compra fue exitosa, muestra este mensaje
   if (success) {
     return (
       <div className="checkout-container success-message">
@@ -122,7 +107,6 @@ const CheckoutPage = () => {
     );
   }
 
-  // Si el carrito está vacío (y la compra no ha sido exitosa aún), muestra este mensaje
   if (cart.length === 0 && !success) {
       return (
           <div className="checkout-container">
@@ -139,23 +123,29 @@ const CheckoutPage = () => {
         
         <div className="order-summary">
           <h3>Resumen de tu Pedido</h3>
-          {cart.map(item => (
-            <div key={item._id} className="summary-item">
-              <img src={item.image && item.image.startsWith('http') ? item.image : `/productos/${item.image}`} alt={item.name} className="summary-item-image" />
-              <div className="summary-item-details">
-                <span className="summary-item-name">{item.name}</span>
-                <span>Cantidad: {item.quantity}</span>
+          {cart.map(item => {
+            const effectivePrice = item.isOnSale && item.salePrice > 0 ? item.salePrice : item.price;
+            
+            return (
+              <div key={item._id} className="summary-item">
+                <img src={item.image && item.image.startsWith('http') ? item.image : `/productos/${item.image}`} alt={item.name} className="summary-item-image" />
+                <div className="summary-item-details">
+                  <span className="summary-item-name">{item.name}</span>
+                  <span>Cantidad: {item.quantity}</span>
+                </div>
+                {/* Usamos el precio efectivo para el subtotal */}
+                <span className="summary-item-price">${(effectivePrice * item.quantity).toFixed(2)}</span>
               </div>
-              <span className="summary-item-price">${(item.price * item.quantity).toFixed(2)}</span>
-            </div>
-          ))}
+            );
+          })}
           <div className="summary-total">
             <strong>Total:</strong>
-            <strong>${cartTotal}</strong>
+            <strong>${getTotal()}</strong>
           </div>
         </div>
 
         <div className="payment-form">
+   
           <h3>Información de Pago (Simulado)</h3>
           <form onSubmit={handleCheckout}>
             <div className="form-group">

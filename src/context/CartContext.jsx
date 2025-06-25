@@ -32,10 +32,13 @@ export const CartProvider = ({ children }) => {
           return { _id: null, name: 'Producto no disponible', price: 0, image: '/productos/default.jfif', quantity, cartItemId };
         }
         const imagePath = productDetails.image || '/productos/default.jfif';
+        // --- INICIO DE CORRECCIÓN 1: Guardar todos los datos de precios ---
         return { 
           _id: productDetails._id, 
           name: productDetails.name, 
-          price: productDetails.price, 
+          price: productDetails.price,
+          isOnSale: productDetails.isOnSale, // <--- CORREGIDO
+          salePrice: productDetails.salePrice, // <--- CORREGIDO
           image: imagePath, 
           quantity,
           cartItemId
@@ -253,9 +256,15 @@ export const CartProvider = ({ children }) => {
             item._id === product._id ? { ...item, quantity: item.quantity + 1 } : item
           );
         }
+        // --- INICIO DE CORRECCIÓN 2: Guardar datos completos para invitados ---
         return [...prev, {
-          _id: product._id, name: product.name, price: product.price,
-          image: imagePath, quantity: 1
+          _id: product._id, 
+          name: product.name, 
+          price: product.price,
+          isOnSale: product.isOnSale, // <--- CORREGIDO
+          salePrice: product.salePrice, // <--- CORREGIDO
+          image: imagePath, 
+          quantity: 1
         }];
       });
     }
@@ -350,9 +359,11 @@ export const CartProvider = ({ children }) => {
 
   const getTotal = () => {
     if (!Array.isArray(cart)) return '0.00';
+    // --- INICIO DE CORRECCIÓN 3: Lógica de getTotal ---
     return cart.reduce(
       (acc, item) => {
-        const price = parseFloat(item.price);
+        const priceToUse = item.isOnSale && item.salePrice > 0 ? item.salePrice : item.price;
+        const price = parseFloat(priceToUse);
         const quantity = parseInt(item.quantity, 10);
         if (isNaN(price) || isNaN(quantity) || !item) return acc;
         return acc + price * quantity;
@@ -378,7 +389,7 @@ export const CartProvider = ({ children }) => {
         loading,
         isMerging,
         clearCartFrontend
-     
+      
       }}
     >
       {children}

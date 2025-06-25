@@ -10,24 +10,20 @@ const CategoryPage = () => {
     const { categoryName } = useParams();
     const { addToCart } = useCart();
 
-    //AÑADIMOS UN NUEVO ESTADO SOLO PARA LOS ERRORES DEL CARRITO
     const [cartError, setCartError] = useState(null);
 
-    //FUNCIÓN PARA MANEJAR Y LIMPIAR EL ERROR DEL CARRITO
     const handleError = (message) => {
         setCartError(message);
         setTimeout(() => {
             setCartError(null);
-        }, 5000); // El mensaje desaparecerá después de 5 segundos
+        }, 5000); 
     };
-
 
     useEffect(() => {
         const fetchProductsByCategory = async () => {
             setLoading(true);
             setError('');
             try {
-        
                 const response = await fetch(`http://localhost:5000/api/products/category/${categoryName}`);
                 if (!response.ok) {
                     const errorData = await response.json().catch(() => ({}));
@@ -46,7 +42,6 @@ const CategoryPage = () => {
         fetchProductsByCategory();
     }, [categoryName]);
 
-    //Renderizado Condicional
     if (loading) {
         return <div style={{ textAlign: 'center', padding: '50px', fontSize: '1.2em' }}>Cargando productos...</div>;
     }
@@ -54,14 +49,12 @@ const CategoryPage = () => {
         return <div style={{ textAlign: 'center', padding: '50px', color: 'red' }}>{error}</div>;
     }
 
-    //Renderizado Principal de la Página 
     return (
         <div className="page-container" style={{ padding: '20px' }}>
             <h1 style={{ textTransform: 'capitalize', textAlign: 'center', marginBottom: '30px' }}>
                 Categoría: {categoryName}
             </h1>
 
-            {/*MOSTRAMOS EL MENSAJE DE ERROR DEL CARRITO AQUÍ*/}
             {cartError && (
                 <div 
                     className="cart-error-message" 
@@ -109,12 +102,26 @@ const CategoryPage = () => {
                                 </h3>
                             </Link>
                             <div>
-                                <p style={{ color: '#007bff', fontSize: '1.2em', fontWeight: 'bold', margin: '10px 0' }}>
-                                    ${product.price ? product.price.toFixed(2) : '0.00'}
-                                </p>
+                       
+                                <div className="price-container" style={{ margin: '10px 0' }}>
+                                    {product.isOnSale && product.salePrice > 0 ? (
+                                        <>
+                                            <span className="sale-price" style={{ color: '#dc3545', fontSize: '1.2em', fontWeight: 'bold' }}>
+                                                ${product.salePrice.toFixed(2)}
+                                            </span>
+                                            <span className="original-price" style={{ textDecoration: 'line-through', color: '#6c757d', marginLeft: '8px' }}>
+                                                ${product.price.toFixed(2)}
+                                            </span>
+                                        </>
+                                    ) : (
+                                        <span className="price" style={{ color: '#007bff', fontSize: '1.2em', fontWeight: 'bold' }}>
+                                            ${product.price ? product.price.toFixed(2) : '0.00'}
+                                        </span>
+                                    )}
+                                </div>
+                           
                                 <button 
                                     style={{ width: '100%', padding: '10px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                                    //PASAMOS LA FUNCIÓN 'handleError' A 'addToCart'
                                     onClick={() => addToCart(product, handleError)}
                                 >
                                     Agregar al Carrito

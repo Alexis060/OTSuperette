@@ -1,7 +1,7 @@
 // src/App.jsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast'; // <-- 1. IMPORTA EL TOASTER
+import { Toaster } from 'react-hot-toast';
 
 // Importa componentes y contextos
 import Header from './components/Header';
@@ -22,6 +22,7 @@ import DetallePokemon from './pages/DetallePokemon';
 import CategoryPage from './pages/CategoryPage';
 import SearchResultsPage from './pages/SearchResultsPage';
 import CheckoutPage from './pages/CheckoutPage';
+import RegisterPage from './pages/RegisterPage'; // <-- 1. IMPORTA LA NUEVA PÁGINA
 
 // Importa las páginas de Administración y Gestión
 import DashboardPage from './pages/DashboardPage';
@@ -62,6 +63,7 @@ function App() {
               <Routes>
                 {/*Rutas Públicas*/}
                 <Route path="/login" element={<Login />} />
+                <Route path="/registro" element={<RegisterPage />} /> {/* <-- 2. AÑADE LA NUEVA RUTA */}
                 <Route path="/" element={<Home />} />
                 <Route path="/categorias" element={<Categories />} />
                 <Route path="/category/:categoryName" element={<CategoryPage />} />
