@@ -75,10 +75,6 @@ function Header() {
       </form>
 
       <div className="header-icons">
-        <button className="icon-button" onClick={() => alert('Funcionalidad de mapa no implementada')}>
-          <box-icon name="map" color="#ffffff" size="md"></box-icon>
-        </button>
-
         <Link to="/carrito" className="cart-icon">
           <i className='bx bx-cart' style={{
             fontSize: '24px',
@@ -90,11 +86,6 @@ function Header() {
           )}
         </Link>
 
-        {isAuth && (
-          <button className="logout-button" onClick={handleLogout}>
-            <box-icon name="log-out" color="#ffffff" size="md"></box-icon>
-          </button>
-        )}
       </div>
 
       <div
@@ -115,12 +106,10 @@ function Header() {
           <li><Link to="/" onClick={() => setMenuOpen(false)}>Inicio</Link></li>
           <li><Link to="/contacto" onClick={() => setMenuOpen(false)}>Ayuda</Link></li>
           
-          {/* === INICIO DE LA SIMPLIFICACIÓN === */}
-          {/* Ahora solo mostramos UN enlace si el usuario es admin u operativo */}
           {isAuth && user && (user.role === 'admin' || user.role === 'operative') && (
             <li><Link to="/dashboard" onClick={() => setMenuOpen(false)}>Panel de Control</Link></li>
           )}
-          {/* === FIN DE LA SIMPLIFICACIÓN === */}
+   
 
           <li><Link to="/categorias" onClick={() => setMenuOpen(false)}>Categorías</Link></li>
           <li><Link to="/ofertas" onClick={() => setMenuOpen(false)}>Ofertas</Link></li>

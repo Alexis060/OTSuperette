@@ -1,68 +1,59 @@
-#root {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh; /* Ocupa toda la altura visible */
-  margin: 0;
-  padding: 0;
-  width: 100%;
-}
+/* src/App.css - Versión Corregida y Optimizada */
+
 body, html {
   margin: 0;
   padding: 0;
   width: 100%;
-  overflow-x: hidden; /* Bloquea scroll horizontal */
-}
-.main-content {
-  flex: 1; /* Esto empuja el footer hacia abajo */
-  width: 100%;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif; /* Fuente moderna */
+  background-color: #f8f9fa; /* Un color de fondo suave */
+  color: #212529;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden; /* Mantenemos el bloqueo de scroll horizontal */
 }
 
-/* Footer fijo */
+/* El ID raíz de la aplicación React */
+#root {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- ESTRUCTURA PRINCIPAL DE LA APLICACIÓN --- */
+
+/* Contenedor del contenido principal (<main>) */
+.main-content {
+  flex: 1; /* Mantenemos esta regla clave para empujar el footer hacia abajo */
+  width: 100%;
+  display: flex; /* Añadimos flex para que el contenedor hijo se pueda centrar bien */
+  flex-direction: column;
+}
+
+/* --- ¡CLASE CLAVE PARA SOLUCIONAR EL CENTRADO! --- */
+.page-container {
+  width: 100%;
+  max-width: 1280px; 
+  margin: 0 auto;    /* ¡Esto centra el contenido horizontalmente! */
+  padding: 2rem;    
+  box-sizing: border-box; /* Importante para que el padding no afecte el ancho */
+}
+
+/* Contenedor reutilizable para cualquier cuadrícula de productos o categorías */
+.grid-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+}
+
+
+/* --- FOOTER --- */
 .footer {
   background-color: #a12f26;
   color: white;
   padding: 1.5rem;
   text-align: center;
   width: 100%;
-  margin-top: auto; /* Mantiene el footer abajo */
 }
-
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
-

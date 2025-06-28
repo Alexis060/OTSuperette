@@ -22,7 +22,12 @@ import DetallePokemon from './pages/DetallePokemon';
 import CategoryPage from './pages/CategoryPage';
 import SearchResultsPage from './pages/SearchResultsPage';
 import CheckoutPage from './pages/CheckoutPage';
-import RegisterPage from './pages/RegisterPage'; // <-- 1. IMPORTA LA NUEVA PÁGINA
+import RegisterPage from './pages/RegisterPage';
+import FaqPage from './pages/FaqPage';
+import TermsPage from './pages/TermsPage';
+import HistoryPage from './pages/HistoryPage';
+import AboutUsPage from './pages/AboutUsPage';
+import ProductDetailPage from './pages/ProductDetailPage'; 
 
 // Importa las páginas de Administración y Gestión
 import DashboardPage from './pages/DashboardPage';
@@ -44,12 +49,9 @@ function App() {
     <AuthProvider>
       <CartProvider>
         <Router>
-          {/*AÑADE EL COMPONENTE TOASTER AQUÍ*/}
-          {/* Este componente gestionará todas las notificaciones de la app */}
-          <Toaster 
+          <Toaster
             position="bottom-center"
             toastOptions={{
-              // Estilos para que se vea bien
               style: {
                 background: '#333',
                 color: '#fff',
@@ -63,7 +65,7 @@ function App() {
               <Routes>
                 {/*Rutas Públicas*/}
                 <Route path="/login" element={<Login />} />
-                <Route path="/registro" element={<RegisterPage />} /> {/* <-- 2. AÑADE LA NUEVA RUTA */}
+                <Route path="/registro" element={<RegisterPage />} />
                 <Route path="/" element={<Home />} />
                 <Route path="/categorias" element={<Categories />} />
                 <Route path="/category/:categoryName" element={<CategoryPage />} />
@@ -73,6 +75,14 @@ function App() {
                 <Route path="/pokemon/:id" element={<DetallePokemon />} />
                 <Route path="/pokemon" element={<DetallePokemon />} />
                 <Route path="/carrito" element={<Cart />} />
+                <Route path="/product/:productId" element={<ProductDetailPage />} /> {/* <-- 2. AÑADIR ESTA LÍNEA */}
+
+                {/* --- INICIO DE RUTAS DEL FOOTER --- */}
+                <Route path="/preguntas-frecuentes" element={<FaqPage />} />
+                <Route path="/terminos-y-condiciones" element={<TermsPage />} />
+                <Route path="/nuestra-historia" element={<HistoryPage />} />
+                <Route path="/quienes-somos" element={<AboutUsPage />} />
+                {/* --- FIN DE RUTAS DEL FOOTER --- */}
 
                 {/*Rutas Protegidas para CUALQUIER Usuario Autenticado*/}
                 <Route element={<ProtectedRoute />}>
@@ -89,14 +99,14 @@ function App() {
                   <Route path="/manage-categories" element={<ManageCategoriesPage />} />
                   <Route path="/edit-category/:id" element={<EditCategoryPage />} />
                 </Route>
-                
+
                 {/*Rutas Protegidas ADICIONALES solo para 'admin'*/}
                 <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
                   <Route path="/admin/create-operative" element={<CreateOperativeUserPage />} />
                   <Route path="/admin/manage-users" element={<ManageOperativeUsersPage />} />
                   <Route path="/admin/edit-user/:userId" element={<EditUserPage />} />
                 </Route>
-                
+
                 {/*Ruta para Páginas No Encontradas (404)*/}
                 <Route path="*" element={<h1>404 - Página no encontrada</h1>} />
               </Routes>

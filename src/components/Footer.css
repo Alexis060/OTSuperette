@@ -1,94 +1,99 @@
-/* ===== FOOTER PRINCIPAL ===== */
+/* src/components/Footer.css */
+
 .footer {
-  background-color: #751a27; /* Tu nuevo color vino oscuro */
-  color: white;
-  padding: 3rem 1rem;
-  font-family: 'Arial', sans-serif;
-  box-sizing: border-box;
+  background-color: #a12f26; 
+  color: #e0e0e0; /* Un blanco suave para el texto */
+  padding: 2.5rem 1.5rem; /* Padding vertical reducido */
+  font-size: 0.95rem;
 }
 
-/* --- CONTENEDOR PRINCIPAL --- */
-/* Distribuye las columnas que queden dentro */
-.footer-container {
+.footer-content {
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
-  justify-content: center; /*  para agrupar las columnas */
   flex-wrap: wrap;
-  gap: 5rem; /* <-- CAMBIO: Aumentamos el espacio entre las columnas */
+  justify-content: space-between; /* Distribuye las columnas */
+  gap: 2rem; /* Espacio entre columnas */
 }
 
-/* COLUMNAS */
-.footer-column {
-  margin-bottom: 1.5rem;
+.footer-section {
+  flex: 1; /* Permite que las columnas compartan el espacio */
+  min-width: 220px; /* Ancho mínimo para cada columna */
+  margin-bottom: 1rem;
 }
 
-.footer-column h3 {
-  color: white;
-  margin-bottom: 1.2rem;
-  font-size: 1.2rem;
+.footer-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #ffffff; /* Títulos en blanco puro */
   position: relative;
   padding-bottom: 0.5rem;
-  font-weight: 600;
 }
 
-.footer-column h3::after {
+/* Línea decorativa debajo del título */
+.footer-title::after {
   content: '';
   position: absolute;
-  left: 0;
   bottom: 0;
-  width: 50px;
+  left: 0;
+  width: 40px;
   height: 2px;
-  background: white;
+  background-color: #ffffff;
 }
 
-/* LINKS */
-.footer-links {
+.footer-section p {
+  line-height: 1.6;
+  max-width: 300px;
+}
+
+.footer-section ul {
   list-style: none;
   padding: 0;
 }
 
-.footer-links li {
-  margin-bottom: 0.8rem;
+.footer-section ul li {
+  margin-bottom: 0.7rem;
 }
 
-.footer-links a {
-  color: #ddd;
+.footer-section ul a,
+.footer-section span {
+  color: #e0e0e0;
   text-decoration: none;
-  transition: all 0.3s ease;
-  display: inline-block;
+  transition: color 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.footer-links a:hover {
-  color: #ffc107;
-  transform: translateX(5px);
+.footer-section ul a:hover {
+  color: #ffffff; /* Se ilumina al pasar el ratón */
 }
 
-/* COPYRIGHT */
 .footer-bottom {
   text-align: center;
-  padding-top: 2rem;
-  margin-top: 2rem;
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: #a0a0a0;
   font-size: 0.9rem;
-  color: #aaa;
 }
 
-/* ===== RESPONSIVE ===== */
+
+/* --- DISEÑO RESPONSIVO --- */
 @media (max-width: 768px) {
-  .footer-container {
-    flex-direction: column;
-    align-items: center;
+  .footer-content {
+    flex-direction: column; /* Apila las columnas */
+    align-items: center;   /* Centra todo en móvil */
     text-align: center;
-    gap: 2rem; /* Reducimos el gap en móvil */
-  }
-  
-  .footer-column h3::after {
-    left: 50%;
-    transform: translateX(-50%);
   }
 
-  .footer-links a:hover {
-    transform: none; /* Elimina desplazamiento en móvil */
+  .footer-title::after {
+    left: 50%;
+    transform: translateX(-50%); /* Centra la línea decorativa */
+  }
+
+  .footer-section p {
+    margin: 0 auto;
   }
 }

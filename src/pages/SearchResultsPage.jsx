@@ -2,14 +2,21 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext'; 
+import ProductCard from '../components/ProductCard';
 
 const SearchResultsPage = () => {
     const [searchResults, setSearchResults] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [cartError, setCartError] = useState(null); // Para manejar errores del carrito
     const [searchParams] = useSearchParams();
     const query = searchParams.get('query');
     const { addToCart } = useCart(); 
+
+    const handleCartError = (message) => {
+        setCartError(message);
+        setTimeout(() => setCartError(null), 5000);
+    };
 
     useEffect(() => {
         if (!query) {
@@ -43,42 +50,28 @@ const SearchResultsPage = () => {
     if (error) return <div style={{ textAlign: 'center', padding: '50px', color: 'red' }}>{error}</div>;
 
     return (
-        <div className="page-container" style={{ padding: '20px' }}>
+        <div className="page-container">
             <h1 style={{ textAlign: 'center', marginBottom: '30px' }}>
                 Resultados de Búsqueda para: "{query}"
             </h1>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}>
+
+            {/* Mensaje de error del carrito */}
+            {cartError && (
+                <div className="cart-error-message" style={{ maxWidth: '800px', margin: '2rem auto' }}>
+                    {cartError}
+                </div>
+            )}
+            
+            {/* Usamos el grid-container para consistencia visual */}
+            <div className="grid-container">
                 {searchResults.length > 0 ? (
                     searchResults.map(product => (
-                        <div 
+                        // Reutilizamos el componente ProductCard que ya es responsivo y muestra bien los precios
+                        <ProductCard 
                             key={product._id} 
-                            style={{ 
-                                border: '1px solid #ddd', 
-                                padding: '15px', 
-                                borderRadius: '8px', 
-                                width: '220px', 
-                                textAlign: 'center', 
-                                boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                justifyContent: 'space-between'
-                            }}
-                        >
-                            <Link to={`/products/${product._id}`} style={{ textDecoration: 'none', color: 'inherit' }}> {/* Asumo que tienes una ruta /products/:id */}
-                                <img src={product.image} alt={product.name} style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius: '4px' }} />
-                                <h3 style={{ marginTop: '10px', minHeight: '44px' }}>{product.name}</h3>
-                            </Link>
-                            <div>
-                                <p style={{ color: '#007bff', fontWeight: 'bold', fontSize: '1.2em', margin: '10px 0' }}>${product.price.toFixed(2)}</p>
-                                <button
-                                    style={{ width: '100%', padding: '10px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                                    //CONECTA el onClick a la función addToCart
-                                    onClick={() => addToCart(product)}
-                                >
-                                    Agregar al Carrito
-                                </button>
-                            </div>
-                        </div>
+                            product={product} 
+                            onAddToCartError={handleCartError} 
+                        />
                     ))
                 ) : (
                     <p>No se encontraron resultados para "{query}". Intenta con otro término.</p>

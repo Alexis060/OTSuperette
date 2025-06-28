@@ -1,0 +1,166 @@
+/* Contenedor principal de la página */
+.product-detail-page {
+  padding: 2rem 1rem;
+  background-color: #f9f9f9;
+}
+
+/* Contenedor principal del detalle (layout de 2 columnas) */
+.product-detail-container {
+  display: flex;
+  flex-wrap: wrap; /* Permite que las columnas se apilen en pantallas pequeñas */
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+/* Columna de la imagen */
+.product-detail-image-container {
+  flex: 1; /* Ocupa la mitad del espacio */
+  min-width: 300px; /* Ancho mínimo antes de apilarse */
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.product-detail-image-container img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+/* Columna de la información */
+.product-detail-info {
+  flex: 1; /* Ocupa la otra mitad del espacio */
+  min-width: 300px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-category {
+  font-size: 0.9rem;
+  color: #666;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.product-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.product-description {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.price-container {
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.detail-regular-price, .detail-sale-price {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #28a745; /* Verde para el precio */
+}
+
+.detail-original-price {
+  font-size: 1.5rem;
+  color: #888;
+  text-decoration: line-through;
+}
+
+.stock-container {
+  margin-bottom: 1.5rem;
+}
+
+.stock-status {
+  font-weight: 600;
+  padding: 0.3rem 0.8rem;
+  border-radius: 5px;
+  font-size: 0.9rem;
+}
+
+.stock-status.available {
+  color: #155724;
+  background-color: #d4edda;
+}
+
+.stock-status.out-of-stock {
+  color: #721c24;
+  background-color: #f8d7da;
+}
+
+/* --- ESTILOS PARA BOTÓN VERDE REUTILIZABLE --- */
+.btn-green {
+  background-color: #28a745; /* Tu color verde */
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-green:hover {
+  background-color: #218838; /* Un verde un poco más oscuro al pasar el mouse */
+  transform: translateY(-2px);
+}
+
+.btn-green:disabled {
+  background-color: #6c757d; /* Color gris para botones deshabilitados */
+  cursor: not-allowed;
+  transform: none;
+}
+
+.add-to-cart-detail {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.back-button {
+  width: 100%;
+  background-color: #555; /* Un color diferente para que no compita con el principal */
+}
+
+.back-button:hover {
+  background-color: #333;
+}
+
+
+/* --- ESTILOS RESPONSIVE --- */
+@media (max-width: 768px) {
+  .product-detail-page {
+    padding: 1rem 0;
+  }
+  
+  .product-detail-container {
+    flex-direction: column; /* Apila las columnas verticalmente */
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .product-detail-image-container, .product-detail-info {
+    padding: 1rem;
+  }
+
+  .product-title {
+    font-size: 2rem;
+  }
+}

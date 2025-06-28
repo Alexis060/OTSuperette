@@ -1,114 +1,259 @@
 /* Cart.css */
 .cart-container {
-  max-width: 800px;
+  max-width: 900px; /* Un poco más de espacio en escritorio */
   margin: 2rem auto;
-  padding: 1rem;
+  padding: 1rem 2rem;
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
 }
 
+.cart-container h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  color: #333;
+}
 
-/* Estilo para el mensaje de error*/
+/* Botón para seguir comprando */
+.back-button {
+  background: none;
+  border: 1px solid #ddd;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.back-button:hover {
+  background-color: #f8f9fa;
+  border-color: #ccc;
+}
+
+/* Mensaje de error (sin cambios, ya es bueno) */
 .cart-error-message {
   padding: 1rem;
-  margin: 1rem 0; /* Lo separamos un poco */
-  background-color: #f8d7da; /* Rojo suave de alerta */
-  color: #721c24;       /* Rojo oscuro para el texto */
+  margin: 1rem 0;
+  background-color: #f8d7da;
+  color: #721c24;
   border: 1px solid #f5c6cb;
-  border-radius: 8px; /* Mismo borde redondeado que tus otros elementos */
+  border-radius: 8px;
   text-align: center;
   font-weight: bold;
-  animation: fadeIn 0.5s ease-in-out; /* Animación para que aparezca suavemente */
+  animation: fadeIn 0.5s ease-in-out;
 }
 
-
-
+/* Contenedor de los items */
 .cart-items {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  margin-top: 20px;
+  gap: 1.5rem;
+  margin-top: 1rem;
 }
 
-/* Item individual - Diseño balanceado */
+/* Estilos para cada item en el carrito (Desktop) */
 .cart-item {
-   display: grid;
-  grid-template-columns: 100px 1fr 150px; /* Imagen | Detalles | Controles */
+  display: grid;
+  grid-template-columns: 100px 1fr auto; /* Imagen | Detalles | Acciones */
   align-items: center;
-  gap: 20px;
-  padding: 15px;
+  gap: 1.5rem;
+  padding: 1rem;
+  border: 1px solid #e9ecef;
   border-radius: 8px;
-  background: #f8f9fa;
+  background: #fff;
   transition: all 0.3s ease;
 }
 
 .cart-item:hover {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-color: #dee2e6;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
-/* Imagen centrada y responsiva */
 .cart-item-image {
-  width: 100%;
+  width: 100px;
   height: 100px;
   object-fit: cover;
   border-radius: 4px;
 }
 
-/* Detalles del producto - Alineación izquierda */
 .item-details {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding-right: 15px;
+  gap: 0.5rem;
+  text-align: left;
 }
 
-/* Controles de cantidad centrados */
+.item-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.item-price {
+  font-size: 1rem;
+  color: #555;
+  margin: 0;
+}
+.item-price.original {
+  text-decoration: line-through;
+  color: #999;
+  font-size: 0.9rem;
+}
+.item-price.sale {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+
 .quantity-controls {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 0.75rem;
 }
 
-/* Botones de acción */
+.quantity-controls button {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #ccc;
+  background-color: #f8f9fa;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2rem;
+  /* Añadimos flexbox para centrar el contenido (+) y (-) */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0; /* Reseteamos el padding para un centrado perfecto */
+  line-height: 1; /* Ayuda a la alineación vertical del texto */
+}
+
+.cart-item-actions {
+  text-align: right;
+}
+
 .remove-item-button {
   background: none;
   border: none;
-  color: #e74c3c;
+  color: #dc3545;
   cursor: pointer;
   font-size: 0.9rem;
-  align-self: flex-start;
+  margin-top: 0.5rem;
 }
 
-/* Sección total centrada */
+/* Resumen del carrito */
 .cart-summary {
-  text-align: center;
-  border-top: 1px solid #eee;
-  padding-top: 20px;
-  margin-top: 20px;
+  border-top: 2px solid #e9ecef;
+  padding-top: 1.5rem;
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* Alinea todo a la derecha */
+  gap: 1rem;
 }
 
-/* Responsive */
+.cart-total {
+  font-size: 1.5rem;
+  font-weight: bold;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.cart-summary-buttons {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.clear-cart-button, .checkout-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.clear-cart-button {
+  background-color: #f8f9fa;
+  border: 1px solid #ced4da;
+  color: #333;
+}
+.clear-cart-button:hover {
+  background-color: #e9ecef;
+}
+
+.checkout-button {
+  background-color: #28a745;
+  color: white;
+}
+.checkout-button:hover {
+  background-color: #218838;
+}
+
+
+/* =========================== */
+/* DISEÑO RESPONSIVO      */
+/* =========================== */
+
 @media (max-width: 768px) {
-  .cart-item {
-    grid-template-columns: 1fr;
-    text-align: center;
+  .cart-container {
+    padding: 1rem;
   }
   
-  .quantity-controls {
-    flex-direction: row;
-    justify-content: center;
+  /* Hacemos un layout más amigable para móviles */
+  .cart-item {
+    grid-template-columns: 80px 1fr; /* Imagen | Contenido */
+    grid-template-rows: auto auto; /* Dos filas */
+    grid-template-areas:
+      "image details"
+      "image actions";
+    row-gap: 0.5rem;
   }
   
   .cart-item-image {
-    width: 150px;
-    height: 150px;
-    margin: 0 auto;
+    grid-area: image;
+    width: 80px;
+    height: 80px;
+  }
+  
+  .item-details {
+    grid-area: details;
+    padding-right: 0;
+  }
+  
+  .cart-item-actions {
+    grid-area: actions;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    text-align: left;
+  }
+  
+  .cart-item-actions p { /* Subtotal */
+    margin: 0;
+    font-weight: bold;
+  }
+
+  .cart-summary {
+    align-items: center; /* Centramos todo en móvil */
+  }
+
+  .cart-summary-buttons {
+    flex-direction: column; /* Apilamos los botones */
+    width: 100%;
+  }
+
+  .clear-cart-button, .checkout-button {
+    width: 100%;
   }
 }
 
-
+/* Animación de entrada */
 @keyframes fadeIn {
   from {
     opacity: 0;

@@ -1,50 +1,74 @@
-import './Banner.css';
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Pagination, Navigation } from 'swiper/modules';
+import { Autoplay, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import 'swiper/css/navigation';
-
-import imagen1 from '../assets/banner1.png';
-import imagen2 from '../assets/banner2.png';
-import imagen3 from '../assets/banner3.png';
+import './Banner.css';
 
 const Banner = () => {
+  const [latestProducts, setLatestProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const swiperRef = useRef(null);
+
+  useEffect(() => {
+    const fetchLatestProducts = async () => {
+      try {
+        const response = await fetch('/api/products/latest/new');
+        if (!response.ok) {
+          throw new Error('No se pudieron cargar los productos del carrusel');
+        }
+        const data = await response.json();
+        setLatestProducts(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchLatestProducts();
+  }, []);
+
+  useEffect(() => {
+    if (swiperRef.current && swiperRef.current.swiper) {
+      swiperRef.current.swiper.update();
+    }
+  }, [latestProducts]);
+
+  if (loading) {
+    return <div className="banner-loading">Cargando novedades...</div>;
+  }
+  
+  if (latestProducts.length === 0) {
+    return null;
+  }
+
   return (
     <div className="banner-container">
       <Swiper
+        ref={swiperRef}
         spaceBetween={30}
         centeredSlides={true}
         autoplay={{
           delay: 3000,
           disableOnInteraction: false,
         }}
-        pagination={{
-          clickable: true,
-        }}
-        navigation={true}
-        modules={[Autoplay, Pagination, Navigation]}
-        breakpoints={{
-          // Desktop: configuración por defecto
-          1024: {
-            navigation: true,
-          },
-          // Móvil: desactiva navegación con flechas
-          0: {
-            navigation: false,
-          }
-        }}
+        pagination={{ clickable: true }}
+
+        modules={[Autoplay, Pagination]} 
       >
-        <SwiperSlide>
-          <img src={imagen1} alt="Banner 1" className="banner-img" />
-        </SwiperSlide>
-        <SwiperSlide>
-          <img src={imagen2} alt="Banner 2" className="banner-img" />
-        </SwiperSlide>
-        <SwiperSlide>
-          <img src={imagen3} alt="Banner 3" className="banner-img" />
-        </SwiperSlide>
+        {latestProducts.map((product) => (
+          <SwiperSlide key={product._id}>
+            <Link to={`/product/${product._id}`}>
+              <img 
+                src={product.image || 'https://placehold.co/1200x400/eee/ccc?text=Producto'} 
+                alt={product.name} 
+                className="banner-img" 
+              />
+            </Link>
+          </SwiperSlide>
+        ))}
       </Swiper>
     </div>
   );

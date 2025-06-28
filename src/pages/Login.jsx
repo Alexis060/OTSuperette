@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';   // Necesario para la función login
+import { useAuth } from '../context/AuthContext'; 
 import './Login.css';
 
 function Login() {
@@ -104,7 +104,7 @@ function Login() {
 
         <div className="login-links">
           <Link to="/registro">¿No tienes cuenta? Regístrate</Link>
-          <Link to="/recuperar">¿Olvidaste tu contraseña?</Link>
+
         </div>
       </form>
     </div>

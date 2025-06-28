@@ -5,42 +5,6 @@
   width: 100%;
 }
 
-/* Contenedor para el título y el botón de regreso */
-.dashboard-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap; /* Para que se adapte en móvil */
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-/* --- INICIO DE LA CORRECCIÓN DE ESTILO --- */
-/* Botón para regresar al inicio */
-.dashboard-back-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem; /* Padding consistente con otros botones */
-  background-color: #28a745; /* Color verde principal */
-  color: white;
-  text-decoration: none;
-  border: none; /* Sin borde */
-  border-radius: 5px;
-  font-weight: 600; /* Texto en negrita */
-  transition: background-color 0.2s;
-}
-
-.dashboard-back-link:hover {
-  background-color: #218838; /* Verde más oscuro al pasar el ratón */
-}
-
-.dashboard-back-link box-icon {
-  fill: white;
-}
-/* --- FIN DE LA CORRECCIÓN DE ESTILO --- */
-
-
 .dashboard-page h1,
 .dashboard-page h2 {
   color: #333;
@@ -48,12 +12,12 @@
 
 .dashboard-page h1 {
   font-size: 2.2rem;
-  margin-bottom: 0;
+  margin-bottom: 0.5rem;
 }
 
 .dashboard-page h2 {
   font-size: 1.5rem;
-  margin-top: 2.5rem;
+  margin-top: 2.5rem; /* Más espacio entre secciones */
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid #eee;
@@ -64,12 +28,15 @@
   color: #555;
 }
 
+/* Contenedor de las tarjetas (versión de escritorio) */
 .dashboard-card-container {
   display: grid;
+  /* El auto-fit se asegura de que se creen columnas de al menos 280px */
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 20px;
 }
 
+/* Estilos para cada tarjeta (versión de escritorio) */
 .dashboard-card {
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -94,7 +61,7 @@
   margin-top: 0;
   margin-bottom: 0.5rem;
   font-size: 1.2rem;
-  color: #007bff;
+  color: #007bff; /* Color azul para el título */
 }
 
 .dashboard-card p {
@@ -105,14 +72,10 @@
 }
 
 /* ================================== */
-/* DISEÑO RESPONSIVO MEJORADO         */
+/* DISEÑO RESPONSIVO                  */
 /* ================================== */
 
 @media (max-width: 768px) {
-  .dashboard-header {
-    flex-direction: column;
-  }
-
   .dashboard-page h1 {
     font-size: 1.8rem;
     text-align: center;
@@ -127,28 +90,31 @@
     text-align: center;
   }
 
+  /* En móvil, las tarjetas se apilan verticalmente */
   .dashboard-card-container {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* Una sola columna */
   }
 
   .dashboard-card {
     padding: 20px;
-    flex-direction: row;
-    align-items: center;
-    text-align: left;
-    gap: 15px;
+    flex-direction: row; /* Cambiamos la dirección a fila */
+    align-items: center; /* Alineamos verticalmente */
+    text-align: left;    /* Alineamos el texto a la izquierda */
+    gap: 15px;           /* Espacio entre el icono y el texto */
   }
 
+  /* Estilos para el contenedor del icono */
   .dashboard-card-icon {
-    flex-shrink: 0;
+    flex-shrink: 0; /* Evita que el icono se encoja */
   }
 
   .dashboard-card-icon box-icon {
     width: 36px;
     height: 36px;
-    fill: #007bff;
+    fill: #007bff; /* Color del icono */
   }
 
+  /* Ajustes para el texto dentro de la tarjeta */
   .dashboard-card h3 {
     font-size: 1.1rem;
     margin-bottom: 0.25rem;
