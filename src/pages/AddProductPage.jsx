@@ -1,7 +1,7 @@
 // src/pages/AddProductPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext'; // Ajusta la ruta si es diferente
-
+import { api } from '../services/api';
 const AddProductPage = () => {
     // Estados para el formulario del nuevo producto
     const [name, setName] = useState('');

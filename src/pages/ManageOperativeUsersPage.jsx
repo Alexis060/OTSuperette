@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom'; 
 import './ManageUsers.css';
-
+import { api } from '../services/api';
 const ManageOperativeUsersPage = () => {
     const [operativeUsers, setOperativeUsers] = useState([]);
     const [loading, setLoading] = useState(true);

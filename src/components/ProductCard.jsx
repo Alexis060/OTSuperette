@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext'; 
 import './ProductCard.css';
+import { api } from '../services/api';
 
 const ProductCard = ({ product, onAddToCartError }) => {
     const { addToCart } = useCart();

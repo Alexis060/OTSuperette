@@ -1,7 +1,7 @@
 // src/context/AuthContext.jsx
 import React, { createContext, useReducer, useContext, useEffect, useCallback, useState } from 'react';
 import { isTokenValid } from '../utils/auth'; 
-
+import { api } from '../services/api';
 const AuthContext = createContext(null);
 
 const authReducer = (state, action) => {

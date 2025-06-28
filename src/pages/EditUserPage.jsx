@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-
+import { api } from '../services/api';
 const EditUserPage = () => {
     // Estados para el formulario, se llenarán con los datos del usuario
     const [name, setName] = useState('');

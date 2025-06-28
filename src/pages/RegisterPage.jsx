@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './RegisterPage.css'; // Crearemos este archivo para los estilos
-
+import { api } from '../services/api';
 const RegisterPage = () => {
     const [formData, setFormData] = useState({
         name: '',

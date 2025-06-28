@@ -3,7 +3,7 @@ import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Cart.css';
-
+import { api } from '../services/api';
 function Cart() {
   const { cart, removeFromCart, updateQuantity, getTotal, clearCart, loading } = useCart();
   const { user } = useAuth();

@@ -1,8 +1,8 @@
 // src/pages/ManageCategoriesPage.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Link } from 'react-router-dom'; // <-- 1. IMPORTAMOS Link
-
+import { Link } from 'react-router-dom';
+import { api } from '../services/api';
 const ManageCategoriesPage = () => {
     const [categories, setCategories] = useState([]);
     const [newCategoryName, setNewCategoryName] = useState('');

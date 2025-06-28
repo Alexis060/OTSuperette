@@ -6,6 +6,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import logo from '../assets/logo.png';
 import './Header.css';
+import { api } from '../services/api';
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);

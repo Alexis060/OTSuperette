@@ -3,8 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import 'boxicons';
-
-// Importa el nuevo archivo CSS
+import { api } from '../services/api';
 import './DashboardPage.css';
 
 const DashboardPage = () => {

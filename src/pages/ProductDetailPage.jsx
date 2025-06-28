@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { toast } from 'react-hot-toast';
 import './ProductDetailPage.css'; 
-
+import { api } from '../services/api';
 function ProductDetailPage() {
   const { productId } = useParams(); // Hook para leer el ID del producto desde la URL
   const navigate = useNavigate(); // Hook para la navegación, lo usaremos en el botón de regresar

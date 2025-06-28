@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext'; 
-
+import { api } from '../services/api';
 const Offers = () => {
     const [offerProducts, setOfferProducts] = useState([]);
     const [loading, setLoading] = useState(true);

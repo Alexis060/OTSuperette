@@ -5,6 +5,7 @@ import { Autoplay, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import './Banner.css';
+import { api } from '../services/api';
 
 const Banner = () => {
   const [latestProducts, setLatestProducts] = useState([]);
@@ -14,14 +15,28 @@ const Banner = () => {
   useEffect(() => {
     const fetchLatestProducts = async () => {
       try {
-        const response = await fetch('/api/products/latest/new');
+        // --- INICIO DE LA CORRECCIÓN ---
+        // 1. Leemos la URL del backend desde las variables de entorno.
+        //    Para Vite, se usa `import.meta.env`.
+        //    Añadimos un valor por defecto para que siga funcionando en tu local.
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+        // 2. Construimos la URL completa para la petición fetch.
+        const response = await fetch(`${API_URL}/api/products/latest/new`);
+        // --- FIN DE LA CORRECCIÓN ---
+
         if (!response.ok) {
-          throw new Error('No se pudieron cargar los productos del carrusel');
+          // Si la respuesta no es exitosa (ej. 404 o 500), lanzamos un error.
+          const errorData = await response.text(); // Leemos como texto para ver si es HTML
+          throw new Error(`Error del servidor: ${response.status}. Respuesta: ${errorData}`);
         }
+        
         const data = await response.json();
         setLatestProducts(data);
+
       } catch (error) {
-        console.error(error);
+        // Este console.error ahora nos dará un error mucho más detallado si algo falla.
+        console.error("No se pudieron cargar los productos del carrusel:", error);
       } finally {
         setLoading(false);
       }
@@ -40,8 +55,9 @@ const Banner = () => {
     return <div className="banner-loading">Cargando novedades...</div>;
   }
   
+  // Si después de cargar no hay productos, mostramos un mensaje amigable.
   if (latestProducts.length === 0) {
-    return null;
+    return <div className="banner-error">No se pudieron cargar los productos destacados.</div>;
   }
 
   return (
@@ -55,7 +71,6 @@ const Banner = () => {
           disableOnInteraction: false,
         }}
         pagination={{ clickable: true }}
-
         modules={[Autoplay, Pagination]} 
       >
         {latestProducts.map((product) => (

@@ -1,6 +1,7 @@
 // src/components/FeaturedProducts.jsx
 import React, { useState, useEffect } from 'react';
 import ProductCard from './ProductCard'; 
+import { api } from '../services/api';
 
 // Recibe 'onAddToCartError' como prop desde Home.jsx
 const FeaturedProducts = ({ onAddToCartError }) => {

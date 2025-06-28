@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-
+import { api } from '../services/api';
 const CategoryPage = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);

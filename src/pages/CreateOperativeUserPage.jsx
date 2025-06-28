@@ -1,8 +1,7 @@
 // src/pages/CreateOperativeUserPage.jsx
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext'; // Ajusta la ruta si es necesario
-// Podrías añadir un archivo CSS para esta página si quieres estilos específicos
-// import './CreateOperativeUserPage.css'; 
+import { useAuth } from '../context/AuthContext'; 
+import { api } from '../services/api';
 
 const CreateOperativeUserPage = () => {
   const [name, setName] = useState('');
