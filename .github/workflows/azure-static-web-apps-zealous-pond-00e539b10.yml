@@ -32,6 +32,12 @@ jobs:
           api_location: "" # Api source code path - optional
           output_location: "dist" # Built app content directory - optional
           ###### End of Repository/Build Configurations ######
+        # --- INICIO DE LA CORRECCIÓN FINAL ---
+        # Esta sección le pasa la URL de tu backend como una variable de entorno
+        # al proceso de compilación de Vite.
+        env:
+          VITE_API_URL: ${{ secrets.AZURE_BACKEND_URL }}
+        # --- FIN DE LA CORRECCIÓN FINAL ---
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
