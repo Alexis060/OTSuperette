@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect, useContext, useRef, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import { api } from '../services/api';
+
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
@@ -21,8 +22,6 @@ export const CartProvider = ({ children }) => {
     console.log("[CartContext DEBUG] Loading state changed:", loading);
   }, [loading]);
 
-
-  
   const handleApiResponse = useCallback((apiResponseData, operationName) => {
     console.log(`[CartContext] handleApiResponse called for (${operationName}). Raw data:`, JSON.stringify(apiResponseData, null, 2));
     if (apiResponseData && apiResponseData.cart && Array.isArray(apiResponseData.cart.products)) {
@@ -32,13 +31,12 @@ export const CartProvider = ({ children }) => {
           return { _id: null, name: 'Producto no disponible', price: 0, image: '/productos/default.jfif', quantity, cartItemId };
         }
         const imagePath = productDetails.image || '/productos/default.jfif';
-        // --- INICIO DE CORRECCIÓN 1: Guardar todos los datos de precios ---
         return { 
           _id: productDetails._id, 
           name: productDetails.name, 
           price: productDetails.price,
-          isOnSale: productDetails.isOnSale, // <--- CORREGIDO
-          salePrice: productDetails.salePrice, // <--- CORREGIDO
+          isOnSale: productDetails.isOnSale,
+          salePrice: productDetails.salePrice,
           image: imagePath, 
           quantity,
           cartItemId
@@ -52,7 +50,6 @@ export const CartProvider = ({ children }) => {
     }
   }, []);
 
-
   useEffect(() => {
     const wasPreviouslyAuth = prevIsAuthRef.current;
     const justLoggedOut = wasPreviouslyAuth && !isAuth;
@@ -62,18 +59,15 @@ export const CartProvider = ({ children }) => {
     const manageCartOnAuthChange = async () => {
       console.log(`[CartContext] manageCartOnAuthChange START - isAuth: ${isAuth}, wasPreviouslyAuth: ${wasPreviouslyAuth}, token: ${!!token}, initialLoadAttempted: ${initialLoadAttemptedForThisAuthSessionRef.current}`);
       setLoading(true);
-
       try {
         if (isAuth && token) {
           if (!wasPreviouslyAuth) {
             console.log("[CartContext] User transitioned to authenticated state.");
             initialLoadAttemptedForThisAuthSessionRef.current = false;
           }
-
           if (!initialLoadAttemptedForThisAuthSessionRef.current) {
             console.log("[CartContext] Initial load/merge for this auth session attempt.");
             initialLoadAttemptedForThisAuthSessionRef.current = true;
-
             const localGuestCartString = localStorage.getItem('guestCart');
             let guestCartItems = [];
             if (localGuestCartString) {
@@ -82,69 +76,48 @@ export const CartProvider = ({ children }) => {
                 if (Array.isArray(parsedItems)) guestCartItems = parsedItems;
               } catch (e) { console.error('[CartContext] Error parseando guestCart:', e); localStorage.removeItem('guestCart'); }
             }
-
             let cartSetFromMerge = false;
             if (guestCartItems.length > 0) {
               const guestCartForMerge = guestCartItems.map(item => ({
                 productId: item._id,
                 quantity: item.quantity 
               })).filter(item => item.productId && typeof item.quantity === 'number' && item.quantity > 0);
-
               if (guestCartForMerge.length > 0) {
                 setIsMerging(true);
                 console.log('[CartContext] Intentando fusionar carrito de invitado:', guestCartForMerge);
                 try {
-                  const mergeRes = await fetch('http://localhost:5000/api/cart/merge', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                    body: JSON.stringify({ guestCart: guestCartForMerge })
-                  });
-
-                  if (!mergeRes.ok) {
-                    const errorData = await mergeRes.json().catch(() => ({ message: mergeRes.statusText }));
-                    console.error('[CartContext] Error fusionando carrito:', errorData.message, errorData.details || '');
-                    if (mergeRes.status === 401) { logout(); return; }
-                  } else {
-                    const data = await mergeRes.json();
-                    console.log('[CartContext] Carrito de invitado fusionado exitosamente. Data:', JSON.stringify(data, null, 2));
-                    localStorage.removeItem('guestCart');
-                    handleApiResponse(data, "/merge");
-                    cartSetFromMerge = true;
-                  }
+                  const data = await api.post('/api/cart/merge', { guestCart: guestCartForMerge }, token);
+                  console.log('[CartContext] Carrito de invitado fusionado exitosamente. Data:', JSON.stringify(data, null, 2));
+                  localStorage.removeItem('guestCart');
+                  handleApiResponse(data, "/merge");
+                  cartSetFromMerge = true;
                 } catch (fetchError) {
                   console.error("[CartContext] Excepción durante fetch a /merge:", fetchError);
+                  if (fetchError.status === 401) { logout(); return; }
                 } finally {
                   setIsMerging(false);
                 }
               }
             }
-            
             if (!cartSetFromMerge) {
               console.log("[CartContext] Cargando carrito desde GET /api/cart (después de intento de merge o sin guest cart).");
               try {
-                const res = await fetch('http://localhost:5000/api/cart', { headers: { Authorization: `Bearer ${token}` } });
-                if (!res.ok) {
-                    if (res.status === 401) { logout(); return; }
-                    const errorData = await res.json().catch(() => ({ message: res.statusText }));
-                    console.error('[CartContext] Error en GET /api/cart, respuesta no OK:', errorData.message || res.statusText);
-                    throw new Error(errorData.message || 'Error cargando carrito (GET /api/cart)');
-                }
-                const data = await res.json();
+                const data = await api.get('/api/cart', token);
                 console.log("[CartContext] Data received from GET /api/cart (antes de handleApiResponse):", JSON.stringify(data, null, 2));
                 if (!data || typeof data.cart === 'undefined') {
                   console.error("[CartContext] Invalid data structure from GET /api/cart. 'cart' property missing or data is null.", data);
                   setCart([]);
-                
                 } else {
                   handleApiResponse(data, "GET /api/cart");
                 }
               } catch (getCartError) {
                 console.error('[CartContext] Catch block: Error en GET /api/cart:', getCartError.message, getCartError.stack);
+                if (getCartError.status === 401) { logout(); return; }
                 setCart([]);
               }
             }
           } else {
-              console.log("[CartContext] Carga/fusión inicial ya intentada para esta sesión. No se repite.");
+            console.log("[CartContext] Carga/fusión inicial ya intentada para esta sesión. No se repite.");
           }
         } else { 
           console.log("[CartContext] Usuario no autenticado. Reseteando flag de carga inicial y cargando guest cart.");
@@ -169,33 +142,20 @@ export const CartProvider = ({ children }) => {
         if (justLoggedOut) isLoggingOutRef.current = false;
       }
     };
-
     manageCartOnAuthChange();
   }, [isAuth, token, logout, handleApiResponse]);
-
 
   useEffect(() => {
     if (loading || isMerging || !Array.isArray(cart) || isLoggingOutRef.current) {
       if(isLoggingOutRef.current) console.log("[CartContext] saveCart: Omitiendo guardado por logout en progreso.");
       return;
     }
-
     const saveCartOperation = async () => {
       try {
         if (isAuth && token && prevIsAuthRef.current) { 
           console.log('[CartContext] Guardando carrito en backend (efecto saveCart):', cart.map(({ _id, quantity }) => ({ productId: _id, quantity })));
-          const updateRes = await fetch('http://localhost:5000/api/cart/update', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-            body: JSON.stringify({ products: cart.map(({ _id, quantity }) => ({ productId: _id, quantity })) })
-          });
-          if (!updateRes.ok) {
-            const errorData = await updateRes.json().catch(() => ({ message: updateRes.statusText }));
-            console.error('[CartContext] Error guardando carrito en backend (update):', errorData.message);
-            if (updateRes.status === 401) logout();
-          } else {
-            console.log("[CartContext] Carrito guardado en backend (update) exitosamente.");
-          }
+          await api.post('/api/cart/update', { products: cart.map(({ _id, quantity }) => ({ productId: _id, quantity })) }, token);
+          console.log("[CartContext] Carrito guardado en backend (update) exitosamente.");
         } else if (!isAuth) {
           const currentLocalGuestCart = localStorage.getItem('guestCart');
           const newGuestCartString = JSON.stringify(cart);
@@ -206,42 +166,30 @@ export const CartProvider = ({ children }) => {
         }
       } catch (error) {
         console.error('[CartContext] Error en saveCartOperation:', error);
+        if(error.status === 401) logout();
       }
     };
-
     if (cart.length > 0 || (prevIsAuthRef.current && isAuth)) {
-        const debounceSave = setTimeout(saveCartOperation, 500);
-        return () => clearTimeout(debounceSave);
+      const debounceSave = setTimeout(saveCartOperation, 500);
+      return () => clearTimeout(debounceSave);
     } else if (!isAuth && cart.length === 0) {
-        const currentLocalGuestCart = localStorage.getItem('guestCart');
-        if (currentLocalGuestCart && currentLocalGuestCart !== "[]") {
-            console.log('[CartContext] Limpiando guestCart de localStorage porque el carrito de invitado está vacío.');
-            localStorage.setItem('guestCart', "[]");
-        }
+      const currentLocalGuestCart = localStorage.getItem('guestCart');
+      if (currentLocalGuestCart && currentLocalGuestCart !== "[]") {
+        console.log('[CartContext] Limpiando guestCart de localStorage porque el carrito de invitado está vacío.');
+        localStorage.setItem('guestCart', "[]");
+      }
     }
   }, [cart, isAuth, token, loading, isMerging, logout]);
-
 
   const addToCart = async (product, onError) => { 
     console.log("[CartContext] addToCart, producto recibido:", product);
     const imagePath = product.image || (product.images && product.images.length > 0 ? product.images[0] : '/productos/default.jfif');
-
     if (isAuth && token) {
       setLoading(true);
       try {
-
-        const addRes = await fetch('http://localhost:5000/api/cart/add', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}`},
-          body: JSON.stringify({ productId: product._id, quantity: 1 })
-        });
-        const data = await addRes.json();
-        if (!addRes.ok) {
-            throw new Error(data.message || 'Error del servidor');
-        }
+        const data = await api.post('/api/cart/add', { productId: product._id, quantity: 1 }, token);
         handleApiResponse(data, "/add");
         if (onError) onError(null); 
-
       } catch (error) {
         console.error('[CartContext] Excepción en addToCart (auth):', error);
         if (onError) onError(error.message);
@@ -256,13 +204,12 @@ export const CartProvider = ({ children }) => {
             item._id === product._id ? { ...item, quantity: item.quantity + 1 } : item
           );
         }
-        // --- INICIO DE CORRECCIÓN 2: Guardar datos completos para invitados ---
         return [...prev, {
           _id: product._id, 
           name: product.name, 
           price: product.price,
-          isOnSale: product.isOnSale, // <--- CORREGIDO
-          salePrice: product.salePrice, // <--- CORREGIDO
+          isOnSale: product.isOnSale,
+          salePrice: product.salePrice,
           image: imagePath, 
           quantity: 1
         }];
@@ -274,16 +221,9 @@ export const CartProvider = ({ children }) => {
     if (isAuth && token) {
       setLoading(true);
       try {
-        const removeRes = await fetch(`http://localhost:5000/api/cart/remove/${productId}`, {
-          method: 'DELETE',
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        const data = await removeRes.json();
-        if (!removeRes.ok) throw new Error(data.message || 'Error del servidor');
-        
+        const data = await api.delete(`/api/cart/remove/${productId}`, token);
         handleApiResponse(data, "/remove");
         if (onError) onError(null);
-
       } catch (error) {
         console.error('[CartContext] Excepción en removeFromCart (auth):', error);
         if (onError) onError(error.message);
@@ -299,21 +239,11 @@ export const CartProvider = ({ children }) => {
     if (newQuantity < 1) {
       return removeFromCart(productId, onError);
     }
-    
     if (isAuth && token) {
       try {
-        const res = await fetch('http://localhost:5000/api/cart/set-quantity', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-            body: JSON.stringify({ productId, quantity: newQuantity })
-        });
-        
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Error al actualizar cantidad');
-
+        const data = await api.post('/api/cart/set-quantity', { productId, quantity: newQuantity }, token);
         handleApiResponse(data, "/set-quantity");
         if (onError) onError(null);
-
       } catch (error) {
         console.error('[CartContext] Error en updateQuantity:', error);
         if (onError) onError(error.message);
@@ -329,14 +259,7 @@ export const CartProvider = ({ children }) => {
     if (isAuth && token) {
       setLoading(true);
       try {
-        const clearRes = await fetch('http://localhost:5000/api/cart/clear', {
-          method: 'DELETE',
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (!clearRes.ok) {
-          const errorData = await clearRes.json().catch(() => ({}));
-          throw new Error(errorData.message || 'Error del servidor');
-        }
+        await api.delete('/api/cart/clear', token);
         if(onError) onError(null);
       } catch (error) {
         console.error('[CartContext] Excepción en clearCart (auth):', error);
@@ -356,10 +279,8 @@ export const CartProvider = ({ children }) => {
     setCart([]);
   };
 
-
   const getTotal = () => {
     if (!Array.isArray(cart)) return '0.00';
-    // --- INICIO DE CORRECCIÓN 3: Lógica de getTotal ---
     return cart.reduce(
       (acc, item) => {
         const priceToUse = item.isOnSale && item.salePrice > 0 ? item.salePrice : item.price;
@@ -389,7 +310,6 @@ export const CartProvider = ({ children }) => {
         loading,
         isMerging,
         clearCartFrontend
-      
       }}
     >
       {children}

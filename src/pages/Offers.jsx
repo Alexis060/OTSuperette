@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext'; 
 import { api } from '../services/api';
+
 const Offers = () => {
     const [offerProducts, setOfferProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -13,11 +14,7 @@ const Offers = () => {
         const fetchOffers = async () => {
             setLoading(true);
             try {
-                const response = await fetch('http://localhost:5000/api/products/offers');
-                if (!response.ok) {
-                    throw new Error('No se pudieron cargar las ofertas');
-                }
-                const data = await response.json();
+                const data = await api.get('/api/products/offers');
                 setOfferProducts(data);
             } catch (err) {
                 setError(err.message);

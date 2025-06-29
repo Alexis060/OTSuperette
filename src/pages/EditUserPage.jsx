@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
+
 const EditUserPage = () => {
     // Estados para el formulario, se llenarán con los datos del usuario
     const [name, setName] = useState('');
@@ -23,11 +24,8 @@ const EditUserPage = () => {
         const fetchUserData = async () => {
             setLoading(true);
             try {
-                const response = await fetch(`http://localhost:5000/api/admin/users/${userId}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await response.json();
-                if (response.ok && data.success) {
+                const data = await api.get(`/api/admin/users/${userId}`, token);
+                if (data.success) {
                     setName(data.user.name);
                     setEmail(data.user.email);
                     setRole(data.user.role);
@@ -55,16 +53,9 @@ const EditUserPage = () => {
         const updatedUser = { name, email, role };
 
         try {
-            const response = await fetch(`http://localhost:5000/api/admin/users/${userId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify(updatedUser),
-            });
-            const data = await response.json();
-            if (response.ok && data.success) {
+            const data = await api.put(`/api/admin/users/${userId}`, updatedUser, token);
+
+            if (data.success) {
                 setFeedbackMessage('¡Usuario actualizado exitosamente! Redirigiendo...');
                 setTimeout(() => navigate('/admin/manage-users'), 2000);
             } else {
@@ -72,7 +63,7 @@ const EditUserPage = () => {
             }
         } catch (err) {
             console.error('Error updating user:', err);
-            setError('Error de conexión o del servidor.');
+            setError(err.message || 'Error de conexión o del servidor.');
         }
     };
 

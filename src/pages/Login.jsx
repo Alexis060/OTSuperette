@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; 
 import './Login.css';
 import { api } from '../services/api';
+
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -12,10 +13,7 @@ function Login() {
   const navigate = useNavigate();
   const { login: authLogin, isAuth: currentlyAuth } = useAuth(); // Obtén login de AuthContext y también isAuth
 
-
-
   useEffect(() => {
-
     if (currentlyAuth) {
       console.log('[Login Page] User already authenticated by context, redirecting.');
       navigate('/');
@@ -29,29 +27,18 @@ function Login() {
     setError('');
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-
-      const data = await res.json(); 
-
-      if (!res.ok) {
-        throw new Error(data.message || 'Error en el servidor');
-      }
+      // La llamada fetch se reemplaza por esta única línea usando el servicio api.
+      const data = await api.post('/api/auth/login', { email, password });
 
       if (data.success && data.token && data.user) { // Verifica que tenga token y datos del usuario
-
         // Esto guardará el token en localStorage Y actualizará el estado global.
         const loginSuccessful = authLogin(data.token, data.user);
 
         if (loginSuccessful) {
           console.log('[Login Page] Login successful via AuthContext, navigating.');
-  
           navigate('/'); // Navega a la página principal o dashboard
         } else {
-          // Si authLogin por alguna razón fallara (aunque en tu AuthContext actual no lo hace internamente)
+          // Si authLogin por alguna razón fallara
           setError('Hubo un problema al procesar el inicio de sesión localmente.');
         }
       } else {
@@ -104,7 +91,6 @@ function Login() {
 
         <div className="login-links">
           <Link to="/registro">¿No tienes cuenta? Regístrate</Link>
-
         </div>
       </form>
     </div>

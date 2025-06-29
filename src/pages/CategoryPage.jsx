@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { api } from '../services/api';
+
 const CategoryPage = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -24,12 +25,7 @@ const CategoryPage = () => {
             setLoading(true);
             setError('');
             try {
-                const response = await fetch(`http://localhost:5000/api/products/category/${categoryName}`);
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData.message || `Error ${response.status}: No se pudo comunicar con el servidor.`);
-                }
-                const data = await response.json();
+                const data = await api.get(`/api/products/category/${categoryName}`);
                 setProducts(Array.isArray(data) ? data : []);
             } catch (err) {
                 setError('No se pudieron cargar los productos de esta categoría.');
@@ -102,7 +98,7 @@ const CategoryPage = () => {
                                 </h3>
                             </Link>
                             <div>
-                       
+                        
                                 <div className="price-container" style={{ margin: '10px 0' }}>
                                     {product.isOnSale && product.salePrice > 0 ? (
                                         <>
@@ -119,7 +115,7 @@ const CategoryPage = () => {
                                         </span>
                                     )}
                                 </div>
-                           
+                            
                                 <button 
                                     style={{ width: '100%', padding: '10px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
                                     onClick={() => addToCart(product, handleError)}

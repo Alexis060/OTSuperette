@@ -12,11 +12,8 @@ const FeaturedProducts = ({ onAddToCartError }) => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await fetch('http://localhost:5000/api/products');
-                if (!response.ok) {
-                    throw new Error('No se pudieron cargar los productos');
-                }
-                const data = await response.json();
+            
+                const data = await api.get('/api/products');
 
                 setProducts(Array.isArray(data) ? data.slice(0, 4) : []);
 
@@ -31,13 +28,13 @@ const FeaturedProducts = ({ onAddToCartError }) => {
     }, []); 
 
     if (loading) return <div style={{textAlign: 'center', padding: '20px'}}>Cargando productos destacados...</div>;
-    if (error) return <div style={{textAlign: 'center', padding: '20px', color: 'red'}}>{error}</div>;
+    if (error) return <div style={{textAlign: 'center', padding: '20px', color: 'red'}}>{error} <p>No se pudo obtener</p></div>;
 
     return (
         <section className="featured-products" style={{ padding: '20px' }}>
             <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Productos Destacados</h2>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}>
-              
+                
                 {products.length > 0 ? (
                     products.map(product => (
                         // Se sigue pasando la prop 'onAddToCartError' a cada ProductCard

@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom'; 
 import './ManageUsers.css';
 import { api } from '../services/api';
+
 const ManageOperativeUsersPage = () => {
     const [operativeUsers, setOperativeUsers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -16,11 +17,8 @@ const ManageOperativeUsersPage = () => {
         setError('');
         setFeedbackMessage('');
         try {
-            const response = await fetch('http://localhost:5000/api/admin/users/operatives', {
-                headers: { 'Authorization': `Bearer ${token}` },
-            });
-            const data = await response.json();
-            if (response.ok && data.success) {
+            const data = await api.get('/api/admin/users/operatives', token);
+            if (data.success) {
                 setOperativeUsers(data.users || []);
             } else {
                 setError(data.message || 'Error al cargar usuarios operativos.');
@@ -44,12 +42,8 @@ const ManageOperativeUsersPage = () => {
         setError('');
         if (window.confirm(`¿Estás seguro de que quieres eliminar al usuario operativo "${userName}"?`)) {
             try {
-                const response = await fetch(`http://localhost:5000/api/admin/users/operative/${userIdToDelete}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` },
-                });
-                const data = await response.json();
-                if (response.ok && data.success) {
+                const data = await api.delete(`/api/admin/users/operative/${userIdToDelete}`, token);
+                if (data.success) {
                     setFeedbackMessage(data.message || 'Usuario operativo eliminado exitosamente.');
                     setOperativeUsers(prevUsers => prevUsers.filter(user => user._id !== userIdToDelete));
                 } else {

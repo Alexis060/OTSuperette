@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+// import axios from 'axios'; // Ya no se necesita
 import './CheckoutPage.css';
 import { api } from '../services/api';
+
 // FUNCIÓN DE UTILIDAD: ALGORITMO DE LUHN (sin cambios)
 const luhnCheck = (val) => {
   let sum = 0;
@@ -19,7 +20,6 @@ const luhnCheck = (val) => {
   }
   return (sum % 10) === 0;
 };
-
 
 const CheckoutPage = () => {
   const { cart, clearCartFrontend, getTotal } = useCart(); 
@@ -42,7 +42,6 @@ const CheckoutPage = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  
   // Función handleCheckout
   const handleCheckout = async (e) => {
     e.preventDefault();
@@ -84,19 +83,20 @@ const CheckoutPage = () => {
     }
 
     try {
-      await axios.post('/api/cart/checkout', {}, { headers: { Authorization: `Bearer ${token}` } });
+      // La llamada a axios.post se reemplaza por api.post
+      await api.post('/api/cart/checkout', {}, token);
+      
       setSuccess(true);
       clearCartFrontend(); 
       setTimeout(() => navigate('/'), 3000);
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Error de comunicación con el servidor.';
+      const errorMessage = err.message || 'Error de comunicación con el servidor.';
       setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
-  
   if (success) {
     return (
       <div className="checkout-container success-message">

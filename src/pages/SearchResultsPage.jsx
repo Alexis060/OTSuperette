@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext'; 
 import ProductCard from '../components/ProductCard';
+import { api } from '../services/api';
 
 const SearchResultsPage = () => {
     const [searchResults, setSearchResults] = useState([]);
@@ -29,11 +30,7 @@ const SearchResultsPage = () => {
             setLoading(true);
             setError('');
             try {
-                const response = await fetch(`http://localhost:5000/api/products/search?q=${encodeURIComponent(query)}`);
-                if (!response.ok) {
-                    throw new Error('Error al buscar productos.');
-                }
-                const data = await response.json();
+                const data = await api.get(`/api/products/search?q=${encodeURIComponent(query)}`);
                 setSearchResults(data || []);
             } catch (err) {
                 setError('No se pudieron cargar los resultados de la búsqueda.');

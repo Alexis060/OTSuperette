@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
+
 const EditProductPage = () => {
     // Estados para el formulario
     const [name, setName] = useState('');
@@ -11,7 +12,7 @@ const EditProductPage = () => {
     const [stock, setStock] = useState(0);
     const [category, setCategory] = useState('');
     
-    // --- 1. NUEVOS ESTADOS PARA MANEJAR LAS OFERTAS ---
+    // --- 1. ESTADOS PARA MANEJAR LAS OFERTAS ---
     const [isOnSale, setIsOnSale] = useState(false);
     const [salePrice, setSalePrice] = useState('');
 
@@ -29,17 +30,10 @@ const EditProductPage = () => {
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
-            const [productResponse, categoriesResponse] = await Promise.all([
-                fetch(`http://localhost:5000/api/products/${productId}`),
-                fetch('http://localhost:5000/api/categories')
+            const [productData, categoriesData] = await Promise.all([
+                api.get(`/api/products/${productId}`),
+                api.get('/api/categories')
             ]);
-
-            if (!productResponse.ok || !categoriesResponse.ok) {
-                 throw new Error('No se pudieron cargar los datos necesarios para la edición.');
-            }
-            
-            const productData = await productResponse.json();
-            const categoriesData = await categoriesResponse.json();
 
             // Rellenamos el formulario con los datos del producto
             setName(productData.name || '');
@@ -53,8 +47,9 @@ const EditProductPage = () => {
             
             setAvailableCategories(categoriesData || []);
             
-            if (productData.category && productData.category._id) {
-                setCategory(productData.category._id);
+            // El 'productData.category' que viene de la API es el ID, no el objeto populado
+            if (productData.category) {
+                setCategory(productData.category);
             } else if (categoriesData && categoriesData.length > 0) {
                 setCategory(categoriesData[0]._id);
             }
@@ -93,24 +88,14 @@ const EditProductPage = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:5000/api/products/${productId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify(updatedProduct),
-            });
-            const data = await response.json();
-            if (response.ok && data.success) {
-                setFeedbackMessage('¡Producto actualizado exitosamente! Redirigiendo...');
-                setTimeout(() => navigate('/manage-products'), 2000);
-            } else {
-                setError(data.message || 'No se pudo actualizar el producto.');
-            }
+            const data = await api.put(`/api/products/${productId}`, updatedProduct, token);
+
+            setFeedbackMessage(data.message || '¡Producto actualizado exitosamente! Redirigiendo...');
+            setTimeout(() => navigate('/manage-products'), 2000);
+            
         } catch (err) {
             console.error('Error updating product:', err);
-            setError('Error de conexión o del servidor.');
+            setError(err.message || 'Error de conexión o del servidor.');
         }
     };
 

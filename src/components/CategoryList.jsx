@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../pages/Categories.css'; 
+import { api } from '../services/api'; // Se añade la importación del servicio
 
 const CategoryList = ({ title }) => {
     const [categories, setCategories] = useState([]);
@@ -11,11 +12,8 @@ const CategoryList = ({ title }) => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch('http://localhost:5000/api/categories');
-                if (!response.ok) {
-                    throw new Error('No se pudieron cargar las categorías');
-                }
-                const data = await response.json();
+                // La llamada fetch se reemplaza por esta única línea
+                const data = await api.get('/api/categories');
                 setCategories(data);
             } catch (err) {
                 setError(err.message);

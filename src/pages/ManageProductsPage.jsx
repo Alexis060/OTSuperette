@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import './ManageProducts.css';
 import { api } from '../services/api';
+
 const ManageProductsPage = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -15,15 +16,9 @@ const ManageProductsPage = () => {
         setLoading(true);
         setError('');
         setFeedbackMessage('');
-        const apiUrl = 'http://localhost:5000/api/products';
         try {
-            const response = await fetch(apiUrl);
-            const data = await response.json();
-            if (response.ok) {
-                setProducts(Array.isArray(data) ? data : (data.products || []));
-            } else {
-                setError(data.message || 'Error al cargar productos.');
-            }
+            const data = await api.get('/api/products');
+            setProducts(Array.isArray(data) ? data : (data.products || []));
         } catch (err) {
             console.error('Error fetching products:', err);
             setError('Error de conexión o del servidor al cargar productos.');
@@ -40,14 +35,9 @@ const ManageProductsPage = () => {
         setFeedbackMessage('');
         setError('');
         if (window.confirm(`¿Estás seguro de que quieres eliminar el producto "${productName}"?`)) {
-            const deleteApiUrl = `http://localhost:5000/api/products/${productId}`;
             try {
-                const response = await fetch(deleteApiUrl, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` },
-                });
-                const data = await response.json();
-                if (response.ok && data.success) {
+                const data = await api.delete(`/api/products/${productId}`, token);
+                if (data.success) {
                     setFeedbackMessage(data.message || 'Producto eliminado exitosamente.');
                     setProducts(prevProducts => prevProducts.filter(p => p._id !== productId));
                 } else {

@@ -1,7 +1,8 @@
 // src/pages/AddProductPage.jsx
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext'; // Ajusta la ruta si es diferente
+import { useAuth } from '../context/AuthContext'; 
 import { api } from '../services/api';
+
 const AddProductPage = () => {
     // Estados para el formulario del nuevo producto
     const [name, setName] = useState('');
@@ -10,7 +11,7 @@ const AddProductPage = () => {
     const [stock, setStock] = useState(0);
     const [category, setCategory] = useState(''); // Ahora guardará el ID de la categoría seleccionada
 
-    // --- 1. NUEVOS ESTADOS PARA MANEJAR LAS CATEGORÍAS DINÁMICAS ---
+    // --- 1. ESTADOS PARA MANEJAR LAS CATEGORÍAS DINÁMICAS ---
     const [availableCategories, setAvailableCategories] = useState([]);
     const [loadingCategories, setLoadingCategories] = useState(true);
 
@@ -25,18 +26,11 @@ const AddProductPage = () => {
         const fetchCategories = async () => {
             setLoadingCategories(true);
             try {
-                // Usamos una ruta relativa asumiendo que tienes el proxy de Vite configurado
-                const response = await fetch('http://localhost:5000/api/categories');
-                const data = await response.json();
-
-                if (response.ok) {
-                    setAvailableCategories(data || []);
-                    // Si hay categorías, establece la primera como la seleccionada por defecto
-                    if (data && data.length > 0) {
-                        setCategory(data[0]._id);
-                    }
-                } else {
-                    setError('Error: No se pudieron cargar las categorías desde el servidor.');
+                const data = await api.get('/api/categories');
+                setAvailableCategories(data || []);
+                // Si hay categorías, establece la primera como la seleccionada por defecto
+                if (data && data.length > 0) {
+                    setCategory(data[0]._id);
                 }
             } catch (err) {
                 console.error("Error fetching categories:", err);
@@ -69,43 +63,31 @@ const AddProductPage = () => {
             return;
         }
 
-        const apiUrl = '/api/products'; // Usamos ruta relativa por el proxy
+        const newProductData = {
+            name,
+            price: numericPrice,
+            imageUrl,
+            stock: numericStock,
+            category: category // Se envía el ID de la categoría seleccionada
+        };
 
         try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    name,
-                    price: numericPrice,
-                    imageUrl,
-                    stock: numericStock,
-                    category: category // Se envía el ID de la categoría seleccionada
-                }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok && data.success) {
-                setMessage(data.message || 'Producto agregado exitosamente.');
-                // Limpiar el formulario
-                setName('');
-                setPrice('');
-                setImageUrl('');
-                setStock(0);
-                // Resetea la categoría al primer elemento de la lista
-                if (availableCategories.length > 0) {
-                    setCategory(availableCategories[0]._id);
-                }
-            } else {
-                setError(data.message || `Error (${response.status}): No se pudo agregar el producto.`);
+            const data = await api.post('/api/products', newProductData, token);
+            
+            setMessage(data.message || 'Producto agregado exitosamente.');
+            // Limpiar el formulario
+            setName('');
+            setPrice('');
+            setImageUrl('');
+            setStock(0);
+            // Resetea la categoría al primer elemento de la lista
+            if (availableCategories.length > 0) {
+                setCategory(availableCategories[0]._id);
             }
+
         } catch (err) {
             console.error('Error en la petición de agregar producto:', err);
-            setError('Error de conexión o del servidor. Inténtalo más tarde.');
+            setError(err.message || 'Error de conexión o del servidor. Inténtalo más tarde.');
         }
     };
 

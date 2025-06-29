@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './RegisterPage.css'; // Crearemos este archivo para los estilos
 import { api } from '../services/api';
+
 const RegisterPage = () => {
     const [formData, setFormData] = useState({
         name: '',
@@ -35,21 +36,13 @@ const RegisterPage = () => {
         setLoading(true);
 
         try {
-            const response = await fetch('http://localhost:5000/api/auth/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: formData.name,
-                    email: formData.email,
-                    password: formData.password
-                })
-            });
+            const payload = {
+                name: formData.name,
+                email: formData.email,
+                password: formData.password
+            };
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Error al registrar el usuario.');
-            }
+            const data = await api.post('/api/auth/register', payload);
 
             if (data.success && data.token && data.user) {
                 // Si el registro es exitoso, hacemos login automáticamente

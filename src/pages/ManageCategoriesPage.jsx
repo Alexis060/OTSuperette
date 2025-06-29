@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
+
 const ManageCategoriesPage = () => {
     const [categories, setCategories] = useState([]);
     const [newCategoryName, setNewCategoryName] = useState('');
@@ -17,12 +18,7 @@ const ManageCategoriesPage = () => {
         setError('');
         setFeedbackMessage('');
         try {
-            const response = await fetch('http://localhost:5000/api/categories'); 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || `Error ${response.status}: No se pudo comunicar con el servidor.`);
-            }
-            const data = await response.json();
+            const data = await api.get('/api/categories');
             setCategories(Array.isArray(data) ? data : []);
         } catch (err) {
             setError('No se pudieron cargar las categorías existentes.');
@@ -44,13 +40,13 @@ const ManageCategoriesPage = () => {
             return setError('El nombre y la URL de la imagen son requeridos.');
         }
         try {
-            const response = await fetch('http://localhost:5000/api/categories', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify({ name: newCategoryName.trim(), imageUrl: newImageUrl.trim() }),
-            });
-            const data = await response.json();
-            if (response.ok && data.success) {
+            const categoryData = { 
+                name: newCategoryName.trim(), 
+                imageUrl: newImageUrl.trim() 
+            };
+            const data = await api.post('/api/categories', categoryData, token);
+
+            if (data.success) {
                 setFeedbackMessage(data.message || 'Categoría creada exitosamente.');
                 fetchCategories(); 
                 setNewCategoryName('');
@@ -59,7 +55,7 @@ const ManageCategoriesPage = () => {
                 setError(data.message || 'Error al crear la categoría.');
             }
         } catch (err) {
-            setError('Error de conexión o del servidor.');
+            setError(err.message || 'Error de conexión o del servidor.');
             console.error('Error creating category:', err);
         }
     };
@@ -69,19 +65,15 @@ const ManageCategoriesPage = () => {
         setFeedbackMessage('');
         if (window.confirm(`¿Estás seguro de que quieres eliminar la categoría "${categoryName}"?`)) {
             try {
-                const response = await fetch(`http://localhost:5000/api/categories/${categoryId}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` },
-                });
-                const data = await response.json();
-                if (response.ok && data.success) {
+                const data = await api.delete(`/api/categories/${categoryId}`, token);
+                if (data.success) {
                     setFeedbackMessage(data.message);
                     setCategories(prev => prev.filter(cat => cat._id !== categoryId));
                 } else {
                     setError(data.message || 'Error al eliminar la categoría.');
                 }
             } catch (err) {
-                setError('Error de conexión o del servidor.');
+                setError(err.message || 'Error de conexión o del servidor.');
                 console.error('Error deleting category:', err);
             }
         }
@@ -126,7 +118,7 @@ const ManageCategoriesPage = () => {
             </form>
 
             <h2>Categorías Existentes</h2>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {error && !feedbackMessage && <p style={{ color: 'red' }}>{error}</p>}
             {categories.length > 0 ? (
                 <ul style={{ listStyle: 'none', padding: 0 }}>
                     {categories.map(category => (
@@ -146,7 +138,6 @@ const ManageCategoriesPage = () => {
                                 <img src={category.imageUrl} alt={category.name} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }}/>
                                 <span>{category.name}</span>
                             </div>
-                            {/* --- 2. CONTENEDOR PARA LOS BOTONES --- */}
                             <div style={{ display: 'flex', gap: '10px' }}>
                                 <Link to={`/edit-category/${category._id}`}>
                                     <button style={{ padding: '5px 10px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>

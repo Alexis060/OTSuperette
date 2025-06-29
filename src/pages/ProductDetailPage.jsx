@@ -4,6 +4,7 @@ import { useCart } from '../context/CartContext';
 import { toast } from 'react-hot-toast';
 import './ProductDetailPage.css'; 
 import { api } from '../services/api';
+
 function ProductDetailPage() {
   const { productId } = useParams(); // Hook para leer el ID del producto desde la URL
   const navigate = useNavigate(); // Hook para la navegación, lo usaremos en el botón de regresar
@@ -18,13 +19,7 @@ function ProductDetailPage() {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/products/${productId}`);
-        
-        if (!response.ok) {
-          throw new Error('No se pudo encontrar el producto.');
-        }
-        
-        const data = await response.json();
+        const data = await api.get(`/api/products/${productId}`);
         setProduct(data);
       } catch (err) {
         setError(err.message);

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
+
 const EditCategoryPage = () => {
     const [name, setName] = useState('');
     const [imageUrl, setImageUrl] = useState('');
@@ -18,14 +19,9 @@ const EditCategoryPage = () => {
         const fetchCategory = async () => {
             setLoading(true);
             try {
-                const response = await fetch(`http://localhost:5000/api/categories/${id}`);
-                const data = await response.json();
-                if (response.ok) {
-                    setName(data.name);
-                    setImageUrl(data.imageUrl);
-                } else {
-                    throw new Error(data.message || 'No se pudo cargar la categoría.');
-                }
+                const data = await api.get(`/api/categories/${id}`);
+                setName(data.name);
+                setImageUrl(data.imageUrl);
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -41,23 +37,11 @@ const EditCategoryPage = () => {
         setError('');
         setFeedbackMessage('');
         try {
-            const response = await fetch(`http://localhost:5000/api/categories/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify({ name, imageUrl }),
-            });
-            const data = await response.json();
-            if (response.ok && data.success) {
-                setFeedbackMessage('¡Categoría actualizada! Redirigiendo...');
-                setTimeout(() => navigate('/manage-categories'), 2000); // Redirige después de 2 segundos
-            } else {
-                setError(data.message || 'Error al actualizar la categoría.');
-            }
+            const data = await api.put(`/api/categories/${id}`, { name, imageUrl }, token);
+            setFeedbackMessage(data.message || '¡Categoría actualizada! Redirigiendo...');
+            setTimeout(() => navigate('/manage-categories'), 2000); // Redirige después de 2 segundos
         } catch (err) {
-            setError('Error de conexión o del servidor.');
+            setError(err.message || 'Error de conexión o del servidor.');
         }
     };
 
