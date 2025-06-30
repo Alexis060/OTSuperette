@@ -21,32 +21,22 @@ const CreateOperativeUserPage = () => {
       return;
     }
 
-    const apiUrl = 'http://localhost:5000/api/admin/users/create-operative'; 
-
     try {
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // Envía el token del admin
-        },
-        body: JSON.stringify({ name, email, password }),
-      });
+      const userData = { name, email, password };
+      const data = await api.post('/api/admin/users/create-operative', userData, token);
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
+      if (data.success) {
         setMessage(data.message || 'Usuario operativo creado exitosamente.');
         // Limpiar el formulario
         setName('');
         setEmail('');
         setPassword('');
       } else {
-        setError(data.message || `Error (${response.status}): No se pudo crear el usuario.`);
+        setError(data.message || 'Error al crear el usuario.');
       }
     } catch (err) {
       console.error('Error en la petición:', err);
-      setError('Error de conexión o del servidor. Inténtalo más tarde.');
+      setError(err.message || 'Error de conexión o del servidor. Inténtalo más tarde.');
     }
   };
 
